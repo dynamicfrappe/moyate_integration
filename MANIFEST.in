@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include moyate_integration *.css
+recursive-include moyate_integration *.csv
+recursive-include moyate_integration *.html
+recursive-include moyate_integration *.ico
+recursive-include moyate_integration *.js
+recursive-include moyate_integration *.json
+recursive-include moyate_integration *.md
+recursive-include moyate_integration *.png
+recursive-include moyate_integration *.py
+recursive-include moyate_integration *.svg
+recursive-include moyate_integration *.txt
+recursive-exclude moyate_integration *.pyc
