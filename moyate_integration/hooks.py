@@ -188,3 +188,7 @@ user_data_fields = [
 #	"moyate_integration.auth.validate"
 # ]
 
+domains = {
+    "Moyate Integration": "moyate_integration.domains.moyate_integration",
+}
+#
