@@ -2,8 +2,8 @@ from . import __version__ as app_version
 
 app_name = "moyate_integration"
 app_title = "moyate_integration"
-app_publisher = "moyate_integration"
-app_description = "moyate_integration"
+app_publisher = "Dynamic Business Solutions"
+app_description = "moyate_integration integrate with repzo "
 app_icon = "octicon octicon-file-directory"
 app_color = "grey"
 app_email = "dynmaic@gmail.com"
@@ -189,6 +189,12 @@ user_data_fields = [
 # ]
 
 domains = {
-    "Moyate Integration": "moyate_integration.domains.moyate_integration",
+    "Repzo": "moyate_integration.domains.moyate_integration",
 }
 #
+
+scheduler_events = {
+    "cron": {
+		"*/15 * * * *": ["moyate_integration.moyate_integration.utils.integration.sync_now"]
+        }
+}

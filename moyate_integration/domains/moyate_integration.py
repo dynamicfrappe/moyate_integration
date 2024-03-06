@@ -27,6 +27,13 @@ data = {
                 "insert_after":"naming_series",
                 # "read_only" :1
             },
+              {
+                "label":_("Variant ID"),
+                "fieldname":"variant_id",
+                "fieldtype":"Data",
+                "insert_after":"item_name",
+                # "read_only" :1
+            },
         ],
         'Item Group':[
              {
@@ -44,6 +51,15 @@ data = {
                 "fieldtype":"Data",
                 "insert_after":"uom_name",
                 # "read_only" :1
+            },
+        ],
+        'Sales Invoice':[
+            {
+                "label":_("Repzo ID"),
+                "fieldname":"repzo_id",
+                "fieldtype":"Data",
+                "insert_after":"posting_date",
+                 "read_only" :1
             },
         ],
         'Price List':[

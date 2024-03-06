@@ -1,0 +1,52 @@
+{
+ "category": "Modules",
+ "charts": [],
+ "creation": "2024-02-26 12:28:35.328942",
+ "developer_mode_only": 0,
+ "disable_user_customization": 0,
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "extends_another_page": 0,
+ "hide_custom": 0,
+ "idx": 0,
+ "is_default": 0,
+ "is_standard": 1,
+ "label": "Repzo",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Repzo Document Payload",
+   "link_to": "Repzo Document Payload",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Repzo Integration",
+   "link_to": "Repzo Integration",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Repzo Logs",
+   "link_to": "Repzo Logs",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2024-02-26 12:28:35.328942",
+ "modified_by": "Administrator",
+ "module": "moyate_integration",
+ "name": "Repzo",
+ "owner": "Administrator",
+ "pin_to_bottom": 0,
+ "pin_to_top": 1,
+ "shortcuts": []
+}

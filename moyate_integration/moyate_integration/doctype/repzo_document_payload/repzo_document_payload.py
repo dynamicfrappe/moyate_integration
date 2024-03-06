@@ -1,0 +1,8 @@
+# Copyright (c) 2024, moyate_integration and contributors
+# For license information, please see license.txt
+
+# import frappe
+from frappe.model.document import Document
+
+class RepzoDocumentPayload(Document):
+	pass

@@ -1,0 +1,33 @@
+"Document","Payload"
+"Customer","{
+""name"" :""{doc.customer_name}"" ,
+""payment_type"" :""cash""
+}"
+"Item","
+{
+    ""name"": ""{doc.name}"",
+    ""local_name"": ""{doc.item_name}"" ,
+     ""category"": ""{frappe_repzo_id('Item Group' , doc.item_group)}"" ,
+     ""sv_measureUnit"" : ""{frappe_repzo_id('UOM' , doc.stock_uom)}""
+
+  
+}   "
+"UOM","{
+    ""name"": ""{doc.name}"",
+    ""factor"": 1
+}"
+"Branch","{
+    ""name"": ""{doc.name}"",
+    ""local_name"": ""{doc.brand}""
+}"
+"Warehouse","{
+    ""name"":  ""{doc.name}"", 
+       ""type"": ""main""
+}"
+"Item Group","{
+    ""name"": ""{doc.name}"",
+    ""local_name"":""{doc.name}"",
+    ""photo"": """",
+    ""icon"": """",
+    ""position"": 1
+}"
