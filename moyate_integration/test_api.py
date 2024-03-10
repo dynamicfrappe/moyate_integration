@@ -103,3 +103,14 @@ headers=  {"Content-Type" :"application/json"}
 url = "http://0.0.0.0:8002/api/method/moyate_integration.api.invoice"
 r = requests.post(url , data=json.dumps(invoice) ,headers=headers)
 
+
+
+temp = {
+    "to": "{frappe_repzo_id('Warehouse' , doc.warehouse)}" ,
+    "variants":[ 
+        {"variant":  "{frappe_repzo_variant('Item' , doc.item_code)}" ,
+        "qty": "{doc.actual_qty}"}
+    ],
+    "datetime": "{datetime.now().timestamp()}",
+    "sync_id": "{doc.name}"
+}
