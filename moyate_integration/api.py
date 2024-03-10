@@ -5,7 +5,8 @@ import json
 from moyate_integration.moyate_integration.controlers import ( create_error_log ,
                                                                create_success_log ,
                                                                get_repzo_setting ,
-                                                               get_document_object_by_repzo_id)
+                                                               get_document_object_by_repzo_id ,
+                                                               create_payment)
 """
 Create invoice
 
@@ -84,3 +85,14 @@ def invoice(*args , **kwargs) :
    except Exception as E :
       create_error_log("api invoice" ,"Sales Invoice" , E)
       print(E)
+
+
+
+@frappe.whitelist(allow_guest=True)
+def payment(*args , **kwrags) :
+   repzo_id  = None
+   
+   if repzo_id :
+      create_payment(repzo_id)
+      return True 
+   return False
