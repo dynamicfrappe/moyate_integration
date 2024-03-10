@@ -2,7 +2,7 @@ import frappe
 import json
 import requests 
 
-
+from datetime import datetime
 
 def execute_payload(payload ,filters = None , update =False):
    """
@@ -18,10 +18,12 @@ def execute_payload(payload ,filters = None , update =False):
    }
    """
    data = frappe.get_doc("Repzo Document Payload" , payload)
+   if data.document == "Bin" :
+      if filters :
+         filters["actual_qty"]  = [">", 0 ]
    all = frappe.get_all(f"{data.document}" ,filters = filters ,fields=['*'])
    request_data = []
    obj = data.webhook_json
-   print(obj)
    json_data = json.loads(obj)
    for doc in all :
       document = {}
@@ -41,7 +43,7 @@ def execute_payload(payload ,filters = None , update =False):
                   for k , val in i .items():
                      if len (str(val)) and str(val)[0] =='{' :
                         obj_key  =  eval(val)
-                        print(obj_key) 
+                       
                         li = list(obj_key)
                         obj[k]  = li[0]
                         #obj[k]  =  str(obj_key )[2:-2]
@@ -49,7 +51,6 @@ def execute_payload(payload ,filters = None , update =False):
                         obj[k] = val
                   updated_value.append(obj)
                document[key] = updated_value
-
          else :            
             document[key]  =  value
       document["erp_name"] = doc.name

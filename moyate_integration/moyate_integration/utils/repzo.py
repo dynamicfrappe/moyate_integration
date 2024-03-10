@@ -14,19 +14,21 @@ from moyate_integration.moyate_integration.controlers import *
 def repzo_put_request(data , doctype , method) :
    repzo = get_repzo_setting()
    url = f"{repzo.url}{method}" 
-   headers= {"api-key" : repzo.api_key}
+   headers= {"api-key" : repzo.api_key , "Content-Type" :"application/json" }
    try :
       for payload in data :
          # get object erp name and remove from payload 
          name =payload["erp_name"] 
          del payload["erp_name"]
          url = url +f"/{payload.get('repzo_id')}"
+
          json_payload = json.dumps(payload)
          put = requests.put(url , headers=headers ,data=json_payload)
          print("Payload , " ,payload)
          if put.status_code in [200 , 201 ]:
             create_success_log(method , doctype ,f"{name} updated success ")
          else :
+            print("Payload , " ,payload)
             print("error")
             create_error_log(method , doctype , f"Update {doctype}  with name {name} accourd error  code {put.status_code} \n with {put.text}")
    except Exception as e :
@@ -46,6 +48,7 @@ def repzo_post_request(data , doctype , method) :
    """
    repzo = get_repzo_setting()
    url = f"{repzo.url}{method}" 
+
    # headers=  {"api-key" : api_key , "Content-Type" :"application/json" }
    headers= {"api-key" : repzo.api_key , "Content-Type" :"application/json"}
    try :
@@ -55,7 +58,8 @@ def repzo_post_request(data , doctype , method) :
          del payload["erp_name"]
          json_payload = json.dumps(payload)
          post = requests.post(url , headers=headers ,data=json_payload)
-         #print("Payload , " ,payload)
+         print("Payload , " ,payload)
+         print(post.text)
          if post.status_code in [200 , 201 ]:
             #set repzo ID 
             response = post.json()
@@ -90,10 +94,11 @@ def repzo_document_update(doctype ,filters= None) :
    update documents
    
    """
+   #print("Doctype" , doctype)
    repzo = get_repzo_setting()
    for i in repzo.items :
       if i.document == doctype :
-         print( f"{i.document} = {doctype}")
+         #print( f"{i.document} = {doctype}")
          data_list = execute_payload(doctype ,filters ,True)
          repzo_put_request(data_list ,doctype , i.method )
 
@@ -108,7 +113,7 @@ def repzo_document_create(doctype ,filters= None) :
    repzo = get_repzo_setting()
    for i in repzo.items :
       if i.document == doctype :
-         print( f"{i.document} = {doctype}")
+         #print( f"{i.document} = {doctype}")
          data_list = execute_payload(doctype ,filters )
          repzo_post_request(data_list ,doctype , i.method)
 
