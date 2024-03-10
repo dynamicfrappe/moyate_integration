@@ -58,8 +58,7 @@ def repzo_post_request(data , doctype , method) :
          del payload["erp_name"]
          json_payload = json.dumps(payload)
          post = requests.post(url , headers=headers ,data=json_payload)
-         print("Payload , " ,payload)
-         print(post.text)
+         
          if post.status_code in [200 , 201 ]:
             #set repzo ID 
             response = post.json()
