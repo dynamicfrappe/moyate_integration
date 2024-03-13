@@ -35,6 +35,7 @@ def invoice(*args , **kwargs) :
       except :
          data = kwargs
       #data = json.loads(kwargs)
+      create_error_log("api invoice" ,"Sales Invoice" , "Data Created success")
       repzo_id =data.get("_id")
       cur_invoice = False
       inv =frappe.db.exists("Sales Invoice" , {"repzo_id":repzo_id} ) or None
@@ -45,7 +46,7 @@ def invoice(*args , **kwargs) :
          cur_invoice = frappe.new_doc("Sales Invoice" )
          cur_invoice.repzo_id = repzo_id 
 
-
+      create_error_log("api invoice" ,"Sales Invoice" , "cur_invoice created success")
     
       repzo =get_repzo_setting()
       # invoice main info  
@@ -80,8 +81,13 @@ def invoice(*args , **kwargs) :
          cur_invoice.append("sales_team"  , {
                "sales_person" :sales_person.sales_person ,
                "allocated_percentage" :sales_person.allocated_percentage
-         })  
-      cur_invoice.save(ignore_permissions = True)
+         })
+
+      create_error_log("api invoice" ,"Sales Invoice" , "item created success")
+      try :
+         cur_invoice.save(ignore_permissions = True)
+      except Exception as E :
+          create_error_log("api invoice" ,"Sales Invoice Save Error " , E)
    except Exception as E :
       create_error_log("api invoice" ,"Sales Invoice" , E)
    

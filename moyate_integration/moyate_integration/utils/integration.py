@@ -99,18 +99,16 @@ def make_sync_updated_data():
    # validate time 
 @frappe.whitelist()   
 def sync_now(*ars ,**kwargs) :
-   make_sync()
-   make_sync_updated_data()
-   # if frappe.flags.in_test:
-   #    make_sync()
-   #    make_sync_updated_data()
-   # else:
-   #    frappe.enqueue( make_sync ,queue="long")
-   #    frappe.enqueue( make_sync_updated_data ,queue="long")
+   # make_sync()
+   # make_sync_updated_data()
+   if frappe.flags.in_test:
+      make_sync()
+      make_sync_updated_data()
+   else:
+      frappe.enqueue( make_sync ,queue="long")
+      frappe.enqueue( make_sync_updated_data ,queue="long")
 
 
-from moyate_integration.moyate_integration.controlers import create_error_log
 
-#from moyate_integration.moyate_integration.utils.integration import create_payment
 
 
