@@ -234,7 +234,7 @@ def create_payment(repzo_id , amount = False):
       
       try:
          log.save(ignore_permissions = True)
-         log.submit()
+         #log.submit()
          frappe.db.commit()
          return log.name
       except Exception as e :

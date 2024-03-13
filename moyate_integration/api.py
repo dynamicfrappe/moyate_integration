@@ -100,7 +100,15 @@ def invoice(*args , **kwargs) :
 @frappe.whitelist(allow_guest=True)
 def payment(*args , **kwrags) :
    repzo_id  = None   
+   try :
+      data = json.loads(kwargs)
+   except :
+      data = kwargs
+
+   if data :
+      repzo_id = data.get("_id")
    if repzo_id :
       create_payment(repzo_id)
+      frappe.local.response['http_status_code'] = 200
       return True 
    return False
