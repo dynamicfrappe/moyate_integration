@@ -195,6 +195,6 @@ domains = {
 
 scheduler_events = {
     "cron": {
-		"*/15 * * * *": ["moyate_integration.moyate_integration.utils.integration.sync_now"]
+		"0/5 * * * *": ["moyate_integration.moyate_integration.utils.integration.sync_now"]
         }
 }

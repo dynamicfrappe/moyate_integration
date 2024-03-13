@@ -106,7 +106,7 @@ invoice  = {
   "lines_discount": 0,
   "media": [],
   "net_total": 1000,
-  "origin_warehouse": "65db5d572bd596243f6cae8a",
+  "origin_warehouse": "65e87ce13c1e9e57ab72a368",
   "overwriteTaxExempt": 0,
   "partially_returned_to": [],
   "partially_returned_to_serial_number": [],
