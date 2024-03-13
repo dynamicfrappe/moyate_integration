@@ -106,7 +106,7 @@ def payment(*args , **kwrags) :
       data = kwargs
 
    if data :
-      repzo_id = data.get("_id")
+      repzo_id = data.get("payments")[0].get("fullinvoice_id")
    if repzo_id :
       create_payment(repzo_id)
       frappe.local.response['http_status_code'] = 200
