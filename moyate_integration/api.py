@@ -71,7 +71,7 @@ def invoice(*args , **kwargs) :
                                           "description" : object.description ,
                                           "uom"    : uom.name ,
                                           "qty" : qty ,
-                                          "rate":float(item.get("total_before_tax"))/1000
+                                          "rate":(float(item.get("total_before_tax") or 1 )/1000)/float(qty)
                                        }
                            )
       # add Sales Team
