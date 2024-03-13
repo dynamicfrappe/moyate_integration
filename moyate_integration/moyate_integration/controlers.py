@@ -209,7 +209,7 @@ def create_payment(repzo_id , amount = False):
       log.party = doc.customer
       log.paid_to = account
       log.paid_to_account_currency = currency
-
+      log.base_paid_amount =  amount if amount else doc.grand_total
       log.paid_amount = amount if amount else doc.grand_total
       log.received_amount = amount if amount else doc.grand_total
 
@@ -226,6 +226,7 @@ def create_payment(repzo_id , amount = False):
          "reference_name": document_name,
          "due_date": doc.posting_date,
          "total_amount": doc.grand_total,
+         "outstanding_amount" : doc.outstanding_amount ,
          "allocated_amount":temp
       }
       log.append("references", reference)
@@ -238,5 +239,5 @@ def create_payment(repzo_id , amount = False):
          frappe.db.commit()
          return log.name
       except Exception as e :
-         create_error_log(create_payment , "Sales Invoice" , e )
+         create_error_log("create_payment" , "Sales Invoice" , e )
          return False
