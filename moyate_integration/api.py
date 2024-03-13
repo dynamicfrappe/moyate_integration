@@ -19,17 +19,17 @@ Submit invoice
 @frappe.whitelist(allow_guest=True)
 def invoice(*args , **kwargs) :
 
-   """
-   accepted params :
-      _id : repzo id 
-      business_day : date object
-      client_id : client_repzo id 
-      origin_warehouse : str warehouse repzo id 
-      "items : [{}] list of objects
+      """
+      accepted params :
+         _id : repzo id 
+         business_day : date object
+         client_id : client_repzo id 
+         origin_warehouse : str warehouse repzo id 
+         "items : [{}] list of objects
+      
+      """
    
-   """
- 
-   try:
+      #try:
       try :
          data = json.loads(kwargs)
       except :
@@ -84,12 +84,12 @@ def invoice(*args , **kwargs) :
          })
 
       create_error_log("api invoice" ,"Sales Invoice" , "item created success")
-      try :
-         cur_invoice.save(ignore_permissions = True)
-      except Exception as E :
-          create_error_log("api invoice" ,"Sales Invoice Save Error " , E)
-   except Exception as E :
-      create_error_log("api invoice" ,"Sales Invoice" , E)
+      #try :
+      cur_invoice.save(ignore_permissions = True)
+      # except Exception as E :
+      #     create_error_log("api invoice" ,"Sales Invoice Save Error " , E)
+   #except Exception as E :
+    #  create_error_log("api invoice" ,"Sales Invoice" , E)
    
 
 
