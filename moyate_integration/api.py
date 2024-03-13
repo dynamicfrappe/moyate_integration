@@ -1,7 +1,5 @@
 import frappe 
 import json 
-
-#from moyate_integration.controlers import create_error_log , create_success_log
 from moyate_integration.moyate_integration.controlers import ( create_error_log ,
                                                                create_success_log ,
                                                                get_repzo_setting ,
@@ -39,13 +37,16 @@ def invoice(*args , **kwargs) :
       #data = json.loads(kwargs)
       repzo_id =data.get("_id")
       cur_invoice = False
-      inv =frappe.db.exists("Sales Invoice" , {"repzo_id":repzo_id} ) or False 
+      inv =frappe.db.exists("Sales Invoice" , {"repzo_id":repzo_id} ) or None
       if inv  :
          cur_invoice  = frappe.get_doc("Sales Invoice" ,
                                           frappe.get_value("Sales Invoice" , {"repzo_id" : repzo_id} ,'name') )
       if not inv :
          cur_invoice = frappe.new_doc("Sales Invoice" )
          cur_invoice.repzo_id = repzo_id 
+
+
+    
       repzo =get_repzo_setting()
       # invoice main info  
       cur_invoice.company = repzo.company
@@ -81,17 +82,15 @@ def invoice(*args , **kwargs) :
                "allocated_percentage" :sales_person.allocated_percentage
          })  
       cur_invoice.save(ignore_permissions = True)
-      # print(data)
    except Exception as E :
       create_error_log("api invoice" ,"Sales Invoice" , E)
-      print(E)
+   
 
 
 
 @frappe.whitelist(allow_guest=True)
 def payment(*args , **kwrags) :
-   repzo_id  = None
-   
+   repzo_id  = None   
    if repzo_id :
       create_payment(repzo_id)
       return True 

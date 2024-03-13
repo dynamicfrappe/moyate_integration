@@ -155,10 +155,15 @@ def get_item_variant_id(item) :
 
 
 
+
+
 @frappe.whitelist()
 def create_payment(repzo_id , amount = False):
       
       """
+
+
+      this fucntion will use throw create payment end point  
       repzo_id = string  sales invoice .repzo id
       
       amount  = float if amout paid_amount will set else paid_amount will = invoice total 
