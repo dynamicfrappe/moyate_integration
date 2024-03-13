@@ -98,7 +98,7 @@ def invoice(*args , **kwargs) :
 
 
 @frappe.whitelist(allow_guest=True)
-def payment(*args , **kwrags) :
+def payment(*args , **kwargs) :
    repzo_id  = None   
    try :
       data = json.loads(kwargs)
