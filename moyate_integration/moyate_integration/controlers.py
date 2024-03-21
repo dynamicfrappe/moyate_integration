@@ -236,7 +236,7 @@ def create_payment(repzo_id , amount = False):
       try:
          log.save(ignore_permissions = True)
          #log.submit()
-         frappe.db.commit()
+         #frappe.db.commit()
          log.docstatus = 1 
          log.save(ignore_permissions = True)
          frappe.db.commit()
