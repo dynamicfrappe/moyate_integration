@@ -231,7 +231,7 @@ def create_payment(repzo_id , amount = False):
       }
       log.append("references", reference)
       log.total_allocated_amount = doc.grand_total
-      log.status = "Submitted"
+      #log.status = "Submitted"
       
       try:
          log.save(ignore_permissions = True)

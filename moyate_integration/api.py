@@ -109,7 +109,7 @@ def payment(*args , **kwargs) :
       #("paymentsData").get("payments")[0].get("fullinvoice_id")
 
       repzo_id = data.get("paymentsData").get("payments")[0].get("fullinvoice_id")
-      amount = float(data.get("paymentsData").get("amount") or 0) / 1000
+      amount = float(data.get("paymentsData").get("payments")[0].get("amount") or 0) / 1000
    if repzo_id :
       create_payment(repzo_id ,amount)
       frappe.local.response['http_status_code'] = 200
