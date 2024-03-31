@@ -11,6 +11,10 @@
   "column_break_3",
   "minutes",
   "company",
+  "customer_info_section",
+  "customer_group",
+  "column_break_8",
+  "territory",
   "section_break_6",
   "items"
  ],
@@ -51,12 +55,33 @@
   {
    "fieldname": "section_break_6",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "customer_info_section",
+   "fieldtype": "Section Break",
+   "label": "Customer info"
+  },
+  {
+   "fieldname": "customer_group",
+   "fieldtype": "Link",
+   "label": "Customer Group",
+   "options": "Customer Group"
+  },
+  {
+   "fieldname": "column_break_8",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "territory",
+   "fieldtype": "Link",
+   "label": "Territory",
+   "options": "Territory"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-03-05 17:12:37.189517",
+ "modified": "2024-03-31 12:26:44.213510",
  "modified_by": "Administrator",
  "module": "moyate_integration",
  "name": "Repzo Integration",

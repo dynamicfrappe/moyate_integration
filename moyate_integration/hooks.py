@@ -198,3 +198,5 @@ scheduler_events = {
 		"0/5 * * * *": ["moyate_integration.moyate_integration.utils.integration.sync_now"]
         }
 }
+
+#from moyate_integration.moyate_integration.utils.integration  import sync_now

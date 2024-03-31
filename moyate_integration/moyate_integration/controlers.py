@@ -22,7 +22,11 @@ def execute_payload(payload ,filters = None , update =False):
    if data.document == "Bin" :
       if filters :
          filters["actual_qty"]  = [">", 0 ]
+
+   print(f"{data.document}  , {filters}")
    all = frappe.get_all(f"{data.document}" ,filters = filters ,fields=['*'])
+
+   print(all)
    request_data = []
    obj = data.webhook_json
    json_data = json.loads(obj)
@@ -54,6 +58,7 @@ def execute_payload(payload ,filters = None , update =False):
                document[key] = updated_value
          else :            
             document[key]  =  value
+      print("Docuemt" , document)
       document["erp_name"] = doc.name
       if update :
          document["repzo_id"] = doc.repzo_id

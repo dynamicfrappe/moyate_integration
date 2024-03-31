@@ -60,22 +60,25 @@ def make_sync():
    repzo = frappe.get_single("Repzo Integration")
    added_minutes = repzo.minutes
    for i in repzo.items :
-      if not i.last_update  :
+      if not i.last_create  :
             repzo_document_create(i.document)
             last_update = now_datetime()
-            frappe.db.sql(f""" UPDATE `tabRepzo Integration Doctypes` SET last_update = '{last_update}'
+            frappe.db.sql(f""" UPDATE `tabRepzo Integration Doctypes` SET last_create = '{last_update}'
             WHERE name ='{i.name}' """)
+            frappe.db.sql(f""" UPDATE `tabRepzo Integration Doctypes` SET last_update = '{current_date}'
+                           WHERE name ='{i.name}' """)
             frappe.db.commit()
-      if i.last_update :
+      if i.last_create :
          current_date = now_datetime()
          # add hour to last update date 
          update_on = i.last_update + timedelta(minutes=int(added_minutes))
          if current_date > update_on :
-            print("current_date greater than update on ")
+            print("current_date greater than craete on ")
             filters ={"creation":[">=", update_on ]}
-            repzo_document_create(i.document ,filters)
-            frappe.db.sql(f""" UPDATE `tabRepzo Integration Doctypes` SET last_update = '{current_date}'
-                          WHERE name ='{i.name}' """)
+            a= repzo_document_create(i.document ,filters)
+            if a :
+               frappe.db.sql(f""" UPDATE `tabRepzo Integration Doctypes` SET last_create = '{current_date}'
+                           WHERE name ='{i.name}' """)
             frappe.db.commit()
          if current_date < update_on :
             print("current_date less than update on ")
@@ -99,14 +102,14 @@ def make_sync_updated_data():
    # validate time 
 @frappe.whitelist()   
 def sync_now(*ars ,**kwargs) :
-   # make_sync()
-   # make_sync_updated_data()
-   if frappe.flags.in_test:
-      make_sync()
-      make_sync_updated_data()
-   else:
-      frappe.enqueue( make_sync ,queue="long")
-      frappe.enqueue( make_sync_updated_data ,queue="long")
+   make_sync()
+   make_sync_updated_data()
+   # if frappe.flags.in_test:
+   #    make_sync()
+   #    make_sync_updated_data()
+   # else:
+   #    frappe.enqueue( make_sync ,queue="long")
+   #    frappe.enqueue( make_sync_updated_data ,queue="long")
 
 
 

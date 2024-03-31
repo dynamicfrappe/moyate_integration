@@ -96,12 +96,12 @@ url = "https://sv.api.repzo.me/adjust-inventory"
 # print(a.json())
 # b = a.json()
 # print(b.get("_id"))
-import requests
-from test_data import invoice
-print(invoice.get("items"))
-headers=  {"Content-Type" :"application/json"}
-url = "http://0.0.0.0:8002/api/method/moyate_integration.api.invoice"
-r = requests.post(url , data=json.dumps(invoice) ,headers=headers)
+# import requests
+# from test_data import invoice
+# print(invoice.get("items"))
+# headers=  {"Content-Type" :"application/json"}
+# url = "http://0.0.0.0:8002/api/method/moyate_integration.api.invoice"
+# r = requests.post(url , data=json.dumps(invoice) ,headers=headers)
 
 
 
