@@ -56,6 +56,7 @@ def repzo_post_request(data , doctype , method) :
    create record on repzo and get response 
  
    """
+   
    repzo = get_repzo_setting()
    url = f"{repzo.url}{method}" 
 

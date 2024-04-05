@@ -18,16 +18,19 @@ def execute_payload(payload ,filters = None , update =False):
                          2 - frappe_item_price return price * 1000 as repzo documents 
    }
    """
+   all =[]
    data = frappe.get_doc("Repzo Document Payload" , payload)
    if data.document == "Bin" :
       if filters :
          filters["actual_qty"]  = [">", 0 ]
-
-   print(f"{data.document}  , {filters}")
-   all = frappe.get_all(f"{data.document}" ,filters = filters ,fields=['*'])
-
-   print(all)
    request_data = []
+   if data.document != "Bin" :
+
+   # print(f"{data.document}  , {filters}")
+      all = frappe.get_all(f"{data.document}" ,filters = filters ,fields=['*'])
+
+   # print(all)
+   
    obj = data.webhook_json
    json_data = json.loads(obj)
    for doc in all :
@@ -58,7 +61,7 @@ def execute_payload(payload ,filters = None , update =False):
                document[key] = updated_value
          else :            
             document[key]  =  value
-      print("Docuemt" , document)
+      # print("Docuemt" , document)
       document["erp_name"] = doc.name
       if update :
          document["repzo_id"] = doc.repzo_id
