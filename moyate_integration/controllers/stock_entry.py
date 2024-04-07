@@ -30,17 +30,6 @@ def submit_stock_entry(doc ,*args , **kwargs) :
       async_submit_stock_entry(doc ) 
 
     else:
+      
+        async_submit_stock_entry(doc ) 
      
-      for item in doc.items :
-        if item.s_warehouse :
-            
-            create_adjustment(item.s_warehouse ,
-                            -1 * float( item.transfer_qty or 1) ,
-                            item.item_code  ,
-                            get_uid(doc.name))
-        if item.t_warehouse :
-
-            create_adjustment(item.t_warehouse ,
-                            float( item.transfer_qty or 1) ,
-                            item.item_code  ,
-                            get_uid(doc.name))
