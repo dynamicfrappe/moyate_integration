@@ -3,7 +3,14 @@ import json
 import requests 
 from datetime import datetime
 
-from datetime import datetime
+import string
+import random
+
+
+
+def get_uid(doc):
+    stri = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+    return f'{doc}-{stri}'
 
 def execute_payload(payload ,filters = None , update =False):
    """
