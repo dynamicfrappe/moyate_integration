@@ -122,7 +122,7 @@ def payment(*args , **kwargs) :
 
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def customer(*args , **kwargs) :
  
    try :
