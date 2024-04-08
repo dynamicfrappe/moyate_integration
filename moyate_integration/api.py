@@ -133,7 +133,7 @@ def customer(*args , **kwargs) :
    repzo =get_repzo_setting()
    repzo_id =data.get("_id")
    if repzo_id :
-      customer = frappe.neW_doc("Customer")
+      customer = frappe.new_doc("Customer")
       customer.repzo_id = repzo_id 
       customer.customer_name = data.get("name")
       customer.customer_group = repzo.customer_group
