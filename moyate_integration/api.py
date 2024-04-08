@@ -139,7 +139,7 @@ def customer(*args , **kwargs) :
       customer.customer_group = repzo.customer_group
       customer.territory =repzo.territory
       try :
-         customer.save()
+         customer.save(ignore_permissions = True)
          create_success_log("Cautomer"  ,"Customer" , "Customer Created success")
          frappe.local.response['http_status_code'] = 200
          return True
