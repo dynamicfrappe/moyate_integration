@@ -35,7 +35,8 @@ def invoice(*args , **kwargs) :
       except :
          data = kwargs
       #data = json.loads(kwargs)
-      create_error_log("api invoice" ,"Sales Invoice" , "Data Created success")
+     
+      create_success_log("Sales invocie"  ,"Sales Invoice" , "Data Created success")
       repzo_id =data.get("_id")
       cur_invoice = False
       inv =frappe.db.exists("Sales Invoice" , {"repzo_id":repzo_id} ) or None
@@ -115,3 +116,37 @@ def payment(*args , **kwargs) :
       frappe.local.response['http_status_code'] = 200
       return True 
    return False
+
+
+
+
+
+
+@frappe.whitelist()
+def customer(*args , **kwargs) :
+ 
+   try :
+      data = json.loads(kwargs)
+   except :
+      data = kwargs
+
+   repzo =get_repzo_setting()
+   repzo_id =data.get("_id")
+   if repzo_id :
+      customer = frappe.neW_doc("Customer")
+      customer.repzo_id = repzo_id 
+      customer.customer_name = data.get("name")
+      customer.customer_group = repzo.customer_group
+      customer.territory =repzo.territory
+      try :
+         customer.save()
+         create_success_log("Cautomer"  ,"Customer" , "Customer Created success")
+         frappe.local.response['http_status_code'] = 200
+         return True
+      except Exception as E :
+         create_error_log("api Customer" ,"Customer Create  error " ,E)
+         frappe.local.response['http_status_code'] = 500
+   else :
+      create_error_log("api Customer" ,"Customer Create  error " , "no repzo ")
+      frappe.local.response['http_status_code'] = 500
+      return True
