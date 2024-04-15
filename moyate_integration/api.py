@@ -115,6 +115,7 @@ def payment(*args , **kwargs) :
          amount = float(doc.get("amount") or 0) / 1000
          if repzo_id :
             create_payment(repzo_id ,amount)
+            create_error_log("api payment" ,"Payment Entry" , f"{repzo_id} - amount {amount}")
       frappe.local.response['http_status_code'] = 200
       return True 
    return False

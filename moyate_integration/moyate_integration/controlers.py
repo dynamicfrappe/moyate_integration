@@ -255,7 +255,8 @@ def create_payment(repzo_id , amount = False):
          log.docstatus = 1 
          log.save(ignore_permissions = True)
          frappe.db.commit()
-         return log.name
+         create_success_log("create_payment" , "Payment Entry" , f"{log.name} succefuly created")
+         #return log.name
       except Exception as e :
          create_error_log("create_payment" , "Sales Invoice" , e )
          return False
