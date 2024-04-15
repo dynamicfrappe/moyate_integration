@@ -5,6 +5,8 @@ from moyate_integration.moyate_integration.controlers import ( create_error_log 
                                                                get_repzo_setting ,
                                                                get_document_object_by_repzo_id ,
                                                                create_payment)
+from frappe.utils import today
+
 """
 Create invoice
 
@@ -52,8 +54,8 @@ def invoice(*args , **kwargs) :
       repzo =get_repzo_setting()
       # invoice main info  
       cur_invoice.company = repzo.company
-      cur_invoice.posting_date = data.get("business_day")
-      cur_invoice.due_date = data.get("business_day")
+      cur_invoice.posting_date = today() #data.get("business_day")
+      cur_invoice.due_date = today() #data.get("business_day")
       cur_invoice.customer =  frappe.get_value("Customer" , {"repzo_id" : data.get("client_id")} ,'name')
       cur_invoice.set_warehouse = frappe.get_value("Warehouse" , {"repzo_id" : data.get("origin_warehouse")} ,'name')
       #invoice  items 
@@ -108,11 +110,11 @@ def payment(*args , **kwargs) :
 
    if data :
       #("paymentsData").get("payments")[0].get("fullinvoice_id")
-
-      repzo_id = data.get("paymentsData").get("payments")[0].get("fullinvoice_id")
-      amount = float(data.get("paymentsData").get("payments")[0].get("amount") or 0) / 1000
-   if repzo_id :
-      create_payment(repzo_id ,amount)
+      for doc in data.get("paymentsData").get("payments") :
+         repzo_id = doc.get("fullinvoice_id")
+         amount = float(doc.get("amount") or 0) / 1000
+         if repzo_id :
+            create_payment(repzo_id ,amount)
       frappe.local.response['http_status_code'] = 200
       return True 
    return False
