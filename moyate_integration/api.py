@@ -116,6 +116,9 @@ def payment(*args , **kwargs) :
          if repzo_id :
             create_payment(repzo_id ,amount)
             create_error_log("api payment" ,"Payment Entry" , f"{repzo_id} - amount {amount}")
+
+         if not repzo_id :
+            create_error_log("api payment" ,"Payment Entry" , "No repzo if found - amount {amount}")
       frappe.local.response['http_status_code'] = 200
       return True 
    return False

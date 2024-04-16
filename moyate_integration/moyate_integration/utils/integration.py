@@ -59,6 +59,7 @@ def make_sync():
    """
    repzo = frappe.get_single("Repzo Integration")
    added_minutes = repzo.minutes
+   current_date = now_datetime()
    for i in repzo.items :
       if not i.last_create  :
             repzo_document_create(i.document)
@@ -69,7 +70,7 @@ def make_sync():
                            WHERE name ='{i.name}' """)
             frappe.db.commit()
       if i.last_create :
-         current_date = now_datetime()
+        
          # add hour to last update date 
          update_on = i.last_update + timedelta(minutes=int(added_minutes))
          if current_date > update_on :
@@ -78,6 +79,8 @@ def make_sync():
             a= repzo_document_create(i.document ,filters)
             if a :
                frappe.db.sql(f""" UPDATE `tabRepzo Integration Doctypes` SET last_create = '{current_date}'
+                           WHERE name ='{i.name}' """)
+               frappe.db.sql(f""" UPDATE `tabRepzo Integration Doctypes` SET last_update = '{current_date}'
                            WHERE name ='{i.name}' """)
             frappe.db.commit()
          if current_date < update_on :
