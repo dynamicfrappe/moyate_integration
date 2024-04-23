@@ -60,6 +60,7 @@ def invoice(*args , **kwargs) :
       cur_invoice.set_warehouse = frappe.get_value("Warehouse" , {"repzo_id" : data.get("origin_warehouse")} ,'name')
       #invoice  items 
       cur_invoice.taxes_and_charges = repzo.tax_template
+      cur_invoice.calculate_taxes_and_totals()
       cur_invoice.items =[]
       for item in data.get("items")  :
          item_object = item.get("variant")
