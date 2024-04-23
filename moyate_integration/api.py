@@ -15,7 +15,13 @@ Submit invoice
 
 """
 
-
+def get_item_defaulte_tax_template(item )  : 
+   template = frappe.db.sql(""" 
+   SELECT item_tax_template FROM `tabItem Tax` WHERE parent = '{item}'
+   
+   """,as_dict=1)
+ 
+   return template[0].get('item_tax_template') if template else None
 
 
 @frappe.whitelist()
@@ -60,7 +66,7 @@ def invoice(*args , **kwargs) :
       cur_invoice.set_warehouse = frappe.get_value("Warehouse" , {"repzo_id" : data.get("origin_warehouse")} ,'name')
       #invoice  items 
       cur_invoice.taxes_and_charges = repzo.tax_template
-      cur_invoice.calculate_taxes_and_totals()
+     
       cur_invoice.items =[]
       for item in data.get("items")  :
          item_object = item.get("variant")
@@ -75,6 +81,7 @@ def invoice(*args , **kwargs) :
                                           "description" : object.description ,
                                           "uom"    : uom.name ,
                                           "qty" : qty ,
+                                          "item_tax_template" : get_item_defaulte_tax_template(object.name) ,
                                           "rate":(float(item.get("total_before_tax") or 1 )/1000)/float(qty)
                                        }
                            )
@@ -89,6 +96,7 @@ def invoice(*args , **kwargs) :
 
       create_error_log("api invoice" ,"Sales Invoice" , "item created success")
       try :
+         cur_invoice.calculate_taxes_and_totals()
          cur_invoice.save(ignore_permissions = True)
          frappe.local.response['http_status_code'] = 200
          cur_invoice.docstatus =1 
