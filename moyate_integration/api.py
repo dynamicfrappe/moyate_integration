@@ -37,7 +37,7 @@ def invoice(*args , **kwargs) :
       except :
          data = kwargs
       #data = json.loads(kwargs)
-     
+   
       create_success_log("Sales invocie"  ,"Sales Invoice" , "Data Created success")
       repzo_id =data.get("_id")
       cur_invoice = False
@@ -59,7 +59,7 @@ def invoice(*args , **kwargs) :
       cur_invoice.customer =  frappe.get_value("Customer" , {"repzo_id" : data.get("client_id")} ,'name')
       cur_invoice.set_warehouse = frappe.get_value("Warehouse" , {"repzo_id" : data.get("origin_warehouse")} ,'name')
       #invoice  items 
-     
+      cur_invoice.taxes_and_charges = repzo.tax_template
       cur_invoice.items =[]
       for item in data.get("items")  :
          item_object = item.get("variant")
