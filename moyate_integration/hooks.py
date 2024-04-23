@@ -104,7 +104,8 @@ app_license = "MIT"
 # }
 doc_events = {
     "Sales Invoice" : {
-        "on_submit" :"moyate_integration.controllers.sales_invoice.submit_sales_invoice"
+        "on_submit" :"moyate_integration.controllers.sales_invoice.submit_sales_invoice" ,
+        "validate" :"moyate_integration.controllers.sales_invoice.validate_sales_invoice"
 	 } ,
      "Delivery Note": {
         "on_submit" :"moyate_integration.controllers.sales_invoice.submit_delivery_note"

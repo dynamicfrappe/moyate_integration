@@ -17,3 +17,16 @@ def submit_delivery_note(doc,*args , **kwargs) :
                            -1 *float( item.stock_qty or 1),
                            item.item_code  ,
                            get_uid(doc.name))
+         
+
+
+def get_item_defaulte_tax_template(item )  : 
+    template = frappe.db.sql(""" 
+    SELECT item_tax_template FROM `tabItem Tax` WHERE parent = '{item}'
+    
+    """,as_dict=1)
+    
+    return template[0].get('item_tax_template') if template else None
+def validate_sales_invoice(doc ,*args , **kwargs)  :
+    for item in doc.items :
+        item.item_tax_template = get_item_defaulte_tax_template(item.item_code)
