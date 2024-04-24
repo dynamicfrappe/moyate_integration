@@ -20,9 +20,9 @@ def submit_delivery_note(doc,*args , **kwargs) :
          
 
 
-def get_item_defaulte_tax_template(item_code )  : 
-    item = frappe.db.get_value("Item" , {"item_name" : item_code} , "name")
-    template = frappe.db.sql(""" 
+def get_item_defaulte_tax_template(item )  : 
+    
+    template = frappe.db.sql(f""" 
     SELECT item_tax_template FROM `tabItem Tax` WHERE parent = '{item}'
     
     """,as_dict=1)
