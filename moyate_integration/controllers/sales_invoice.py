@@ -32,3 +32,4 @@ def validate_sales_invoice(doc ,*args , **kwargs)  :
     for item in doc.items :
         create_error_log("item_tax_template" , get_item_defaulte_tax_template(item.item_code)  , get_item_defaulte_tax_template(item.item_code))
         item.item_tax_template = get_item_defaulte_tax_template(item.item_code)
+    doc.calculate_taxes_and_totals()

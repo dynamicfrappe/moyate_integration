@@ -96,6 +96,8 @@ def invoice(*args , **kwargs) :
 
       create_error_log("api invoice" ,"Sales Invoice" , "item created success")
       try :
+        
+         cur_invoice.save(ignore_permissions = True)
          cur_invoice.calculate_taxes_and_totals()
          cur_invoice.save(ignore_permissions = True)
          frappe.local.response['http_status_code'] = 200
