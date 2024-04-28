@@ -1,6 +1,6 @@
 import requests 
 from datetime import datetime
-
+from test_data import invoice
 import json
 """
 
@@ -100,12 +100,12 @@ url = "https://sv.api.repzo.me/adjust-inventory"
 
 
 
-temp = {
-    "to": "{frappe_repzo_id('Warehouse' , doc.warehouse)}" ,
-    "variants":[ 
-        {"variant":  "{frappe_repzo_variant('Item' , doc.item_code)}" ,
-        "qty": "{doc.actual_qty}"}
-    ],
-    "datetime": "{datetime.now().timestamp()}",
-    "sync_id": "{doc.name}"
-}
+# temp = {
+#     "to": "{frappe_repzo_id('Warehouse' , doc.warehouse)}" ,
+#     "variants":[ 
+#         {"variant":  "{frappe_repzo_variant('Item' , doc.item_code)}" ,
+#         "qty": "{doc.actual_qty}"}
+#     ],
+#     "datetime": "{datetime.now().timestamp()}",
+#     "sync_id": "{doc.name}"
+# }

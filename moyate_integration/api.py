@@ -1,5 +1,6 @@
 import frappe 
 import json 
+from moyate_integration.moyate_integration.utils.taxts import calculate_taxes_and_totals_update
 from moyate_integration.moyate_integration.controlers import ( create_error_log ,
                                                                create_success_log ,
                                                                get_repzo_setting ,
@@ -27,17 +28,17 @@ def get_item_defaulte_tax_template(item )  :
 @frappe.whitelist()
 def invoice(*args , **kwargs) :
 
-   """
-   accepted params :
-      _id : repzo id 
-      business_day : date object
-      client_id : client_repzo id 
-      origin_warehouse : str warehouse repzo id 
-      "items : [{}] list of objects
+      """
+      accepted params :
+         _id : repzo id 
+         business_day : date object
+         client_id : client_repzo id 
+         origin_warehouse : str warehouse repzo id 
+         "items : [{}] list of objects
+      
+      """
    
-   """
-   
-   try:
+      # try:
       try :
          data = json.loads(kwargs)
       except :
@@ -65,7 +66,7 @@ def invoice(*args , **kwargs) :
       cur_invoice.customer =  frappe.get_value("Customer" , {"repzo_id" : data.get("client_id")} ,'name')
       cur_invoice.set_warehouse = frappe.get_value("Warehouse" , {"repzo_id" : data.get("origin_warehouse")} ,'name')
       #invoice  items 
-      cur_invoice.taxes_and_charges = repzo.tax_template
+      #cur_invoice.taxes_and_charges = repzo.tax_template
      
       cur_invoice.items =[]
       for item in data.get("items")  :
@@ -93,20 +94,21 @@ def invoice(*args , **kwargs) :
                "sales_person" :sales_person.sales_person ,
                "allocated_percentage" :sales_person.allocated_percentage
          })
-
+      calculate_taxes_and_totals_update(cur_invoice)
       create_error_log("api invoice" ,"Sales Invoice" , "item created success")
-      try :
+      #try :
         
-         cur_invoice.save(ignore_permissions = True)
-         cur_invoice.calculate_taxes_and_totals()
-         cur_invoice.save(ignore_permissions = True)
-         frappe.local.response['http_status_code'] = 200
-         cur_invoice.docstatus =1 
-         cur_invoice.save(ignore_permissions = True)
-      except Exception as E :
-          create_error_log("api invoice" ,"Sales Invoice Save Error " , E)
-   except Exception as E :
-     create_error_log("api invoice" ,"Sales Invoice" , E)
+      cur_invoice.save(ignore_permissions = True)
+      #calculate_taxes_and_totals_update(cur_invoice)
+      cur_invoice.calculate_taxes_and_totals()
+      cur_invoice.save(ignore_permissions = True)
+      frappe.local.response['http_status_code'] = 200
+      cur_invoice.validate()
+      cur_invoice.submit()
+      # except Exception as E :
+      #     create_error_log("api invoice" ,"Sales Invoice Save Error " , E)
+   # except Exception as E :
+   #   create_error_log("api invoice" ,"Sales Invoice" , E)
    
 
 
