@@ -3,7 +3,6 @@ import frappe
 from moyate_integration.controllers.repzo_stock_adjustment import create_adjustment
 from moyate_integration.moyate_integration.controlers import get_uid
 from moyate_integration.moyate_integration.controlers import ( create_error_log )
-
 from moyate_integration.moyate_integration.utils.taxts import calculate_taxes_and_totals_update
 
 
@@ -11,15 +10,17 @@ from moyate_integration.moyate_integration.utils.taxts import calculate_taxes_an
 
 def get_item_tax_details(doc) :
 
-    doc.taxes = []
+   
     for item in doc.items :
-        tax_template = frappe.get_doc("Item Tax Template" , item.item_tax_template)
-        for tax_obj in tax_template.taxes :
-            raw = doc.append("taxes")
-            raw.account_head = tax_obj.tax_type
-            raw.rate = tax_obj.tax_rate
-            raw.charge_type = "On Net Total"
-            raw.description = tax_template.title
+        if item.item_tax_template :
+            doc.taxes = []
+            tax_template = frappe.get_doc("Item Tax Template" , item.item_tax_template)
+            for tax_obj in tax_template.taxes :
+                raw = doc.append("taxes")
+                raw.account_head = tax_obj.tax_type
+                raw.rate = tax_obj.tax_rate
+                raw.charge_type = "On Net Total"
+                raw.description = tax_template.title
 def submit_sales_invoice(doc ,*args , **kwargs) :
     if doc.update_stock ==1 and not doc.repzo_id :
         for item in doc.items :

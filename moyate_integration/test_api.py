@@ -109,3 +109,11 @@ url = "https://sv.api.repzo.me/adjust-inventory"
 #     "datetime": "{datetime.now().timestamp()}",
 #     "sync_id": "{doc.name}"
 # }
+
+
+url= "http://0.0.0.0:8002/api/method/moyate_integration.api.invoice"
+api_key = "yPXhX5VQESaeoVRi4mi7O7h_EN8nsqLQ6LNQJifVzjA"
+
+api_key = "1ca97e4f02ebab0"
+api_secret = ""
+headers=  {"api-key" : api_key ,"Content-Type" :"application/json"}
