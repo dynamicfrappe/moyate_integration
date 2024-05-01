@@ -76,6 +76,7 @@ def repzo_post_request(data , doctype , method) :
             repzo_id = response.get("_id")
             # update with sql 
             frappe.db.sql(f"UPDATE `tab{doctype}` set repzo_id ='{repzo_id}' WHERE name = '{name}'")
+            frappe.db.commit()
             # print("done")
             create_success_log(method , doctype ,f"{name} synced with id {repzo_id}")
          else :
