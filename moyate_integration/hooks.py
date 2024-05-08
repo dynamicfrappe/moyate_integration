@@ -102,7 +102,24 @@ app_license = "MIT"
 #		"on_trash": "method"
 #	}
 # }
-
+doc_events = {
+    "Sales Invoice" : {
+        "on_submit" :"moyate_integration.controllers.sales_invoice.submit_sales_invoice" ,
+        "validate" :"moyate_integration.controllers.sales_invoice.validate_sales_invoice"
+	 } ,
+     "Delivery Note": {
+        "on_submit" :"moyate_integration.controllers.sales_invoice.submit_delivery_note"
+	 } ,
+     "Purchase Receipt" :{
+         "on_submit" : "moyate_integration.controllers.purchase_invoice.submit_purchase_receipt"
+	 } ,
+      "Purchase Invoice" :{
+         "on_submit" : "moyate_integration.controllers.purchase_invoice.submit_purchase_invoice"
+	 } , 
+     "Stock Entry" : {
+         "on_submit" : "moyate_integration.controllers.stock_entry.submit_stock_entry"
+	 }
+}
 # Scheduled Tasks
 # ---------------
 

@@ -5,6 +5,16 @@ from frappe.utils import nowdate, now_datetime
 from moyate_integration.moyate_integration.utils.repzo import repzo_document_create ,repzo_document_update
 from datetime import datetime, timedelta
 
+
+def post_all_items_without_repzo_id():
+   filters = [["repzo_id" , "=" , ""]]
+   doctyeps = ["Item" , "Customer"]
+   for doc in doctyeps :
+      repzo_document_create(doc ,filters)
+      last_update = now_datetime()
+      frappe.db.sql(f""" UPDATE `tabRepzo Integration Doctypes` SET last_create = '{last_update}'
+            WHERE name ='{doc}' """)
+      frappe.db.commit()
 def create_custom_field(doctype) :
 
    """
@@ -59,6 +69,7 @@ def make_sync():
    """
    repzo = frappe.get_single("Repzo Integration")
    added_minutes = repzo.minutes
+   current_date = now_datetime()
    for i in repzo.items :
       if not i.last_create  :
             repzo_document_create(i.document)
@@ -69,20 +80,22 @@ def make_sync():
                            WHERE name ='{i.name}' """)
             frappe.db.commit()
       if i.last_create :
-         current_date = now_datetime()
+        
          # add hour to last update date 
          update_on = i.last_update + timedelta(minutes=int(added_minutes))
          if current_date > update_on :
             print("current_date greater than craete on ")
-            filters ={"creation":[">=", update_on ]}
-            a= repzo_document_create(i.document ,filters)
-            if a :
-               frappe.db.sql(f""" UPDATE `tabRepzo Integration Doctypes` SET last_create = '{current_date}'
-                           WHERE name ='{i.name}' """)
+            filters ={"creation":[">=", update_on ] , "repzo_id" :["=" , ""]}
+            repzo_document_create(i.document ,filters)
+           
+            frappe.db.sql(f""" UPDATE `tabRepzo Integration Doctypes` SET last_create = '{current_date}'
+                        WHERE name ='{i.name}' """)
+            # frappe.db.sql(f""" UPDATE `tabRepzo Integration Doctypes` SET last_update = '{current_date}'
+            #             WHERE name ='{i.name}' """)
             frappe.db.commit()
          if current_date < update_on :
             print("current_date less than update on ")
-   return True
+   #return True
 @frappe.whitelist()
 def make_sync_updated_data():
    repzo = frappe.get_single("Repzo Integration")
@@ -92,7 +105,7 @@ def make_sync_updated_data():
          current_date = now_datetime()
          update_on = i.last_update + timedelta(minutes=int(added_minutes))
          if current_date > update_on :
-            filters ={"modified":[">=", update_on ]}
+            filters ={"modified":[">=", update_on ] , "repzo_id" :[ "!=" , ""]}
             repzo_document_update(i.document ,filters)
             frappe.db.sql(f""" UPDATE `tabRepzo Integration Doctypes` SET last_update = '{current_date}'
                            WHERE name ='{i.name}' """)
@@ -102,6 +115,7 @@ def make_sync_updated_data():
    # validate time 
 @frappe.whitelist()   
 def sync_now(*ars ,**kwargs) :
+   post_all_items_without_repzo_id()
    make_sync()
    make_sync_updated_data()
    # if frappe.flags.in_test:

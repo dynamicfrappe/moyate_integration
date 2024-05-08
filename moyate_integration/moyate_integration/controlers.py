@@ -3,7 +3,14 @@ import json
 import requests 
 from datetime import datetime
 
-from datetime import datetime
+import string
+import random
+
+
+
+def get_uid(doc):
+    stri = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+    return f'{doc}-{stri}'
 
 def execute_payload(payload ,filters = None , update =False):
    """
@@ -18,16 +25,19 @@ def execute_payload(payload ,filters = None , update =False):
                          2 - frappe_item_price return price * 1000 as repzo documents 
    }
    """
+   all =[]
    data = frappe.get_doc("Repzo Document Payload" , payload)
    if data.document == "Bin" :
       if filters :
          filters["actual_qty"]  = [">", 0 ]
-
-   print(f"{data.document}  , {filters}")
-   all = frappe.get_all(f"{data.document}" ,filters = filters ,fields=['*'])
-
-   print(all)
    request_data = []
+   if data.document != "Bin" :
+
+   # print(f"{data.document}  , {filters}")
+      all = frappe.get_all(f"{data.document}" ,filters = filters ,fields=['*'])
+
+   # print(all)
+   
    obj = data.webhook_json
    json_data = json.loads(obj)
    for doc in all :
@@ -58,7 +68,7 @@ def execute_payload(payload ,filters = None , update =False):
                document[key] = updated_value
          else :            
             document[key]  =  value
-      print("Docuemt" , document)
+      # print("Docuemt" , document)
       document["erp_name"] = doc.name
       if update :
          document["repzo_id"] = doc.repzo_id
@@ -245,7 +255,8 @@ def create_payment(repzo_id , amount = False):
          log.docstatus = 1 
          log.save(ignore_permissions = True)
          frappe.db.commit()
-         return log.name
+         create_success_log("create_payment" , "Payment Entry" , f"{log.name} succefuly created")
+         #return log.name
       except Exception as e :
          create_error_log("create_payment" , "Sales Invoice" , e )
          return False

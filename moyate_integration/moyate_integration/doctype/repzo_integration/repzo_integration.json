@@ -13,6 +13,7 @@
   "company",
   "customer_info_section",
   "customer_group",
+  "tax_template",
   "column_break_8",
   "territory",
   "section_break_6",
@@ -76,12 +77,19 @@
    "fieldtype": "Link",
    "label": "Territory",
    "options": "Territory"
+  },
+  {
+   "fieldname": "tax_template",
+   "fieldtype": "Link",
+   "label": "Tax Template",
+   "options": "Sales Taxes and Charges Template",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-03-31 12:26:44.213510",
+ "modified": "2024-04-23 14:48:37.856066",
  "modified_by": "Administrator",
  "module": "moyate_integration",
  "name": "Repzo Integration",

@@ -1,6 +1,6 @@
 import requests 
 from datetime import datetime
-
+from test_data import invoice
 import json
 """
 
@@ -96,21 +96,24 @@ url = "https://sv.api.repzo.me/adjust-inventory"
 # print(a.json())
 # b = a.json()
 # print(b.get("_id"))
-# import requests
-# from test_data import invoice
-# print(invoice.get("items"))
-# headers=  {"Content-Type" :"application/json"}
-# url = "http://0.0.0.0:8002/api/method/moyate_integration.api.invoice"
-# r = requests.post(url , data=json.dumps(invoice) ,headers=headers)
+# sync
 
 
 
-temp = {
-    "to": "{frappe_repzo_id('Warehouse' , doc.warehouse)}" ,
-    "variants":[ 
-        {"variant":  "{frappe_repzo_variant('Item' , doc.item_code)}" ,
-        "qty": "{doc.actual_qty}"}
-    ],
-    "datetime": "{datetime.now().timestamp()}",
-    "sync_id": "{doc.name}"
-}
+# temp = {
+#     "to": "{frappe_repzo_id('Warehouse' , doc.warehouse)}" ,
+#     "variants":[ 
+#         {"variant":  "{frappe_repzo_variant('Item' , doc.item_code)}" ,
+#         "qty": "{doc.actual_qty}"}
+#     ],
+#     "datetime": "{datetime.now().timestamp()}",
+#     "sync_id": "{doc.name}"
+# }
+
+
+url= "http://0.0.0.0:8002/api/method/moyate_integration.api.invoice"
+api_key = "yPXhX5VQESaeoVRi4mi7O7h_EN8nsqLQ6LNQJifVzjA"
+
+api_key = "1ca97e4f02ebab0"
+api_secret = ""
+headers=  {"api-key" : api_key ,"Content-Type" :"application/json"}
