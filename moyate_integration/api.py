@@ -152,19 +152,21 @@ def customer(*args , **kwargs) :
    repzo =get_repzo_setting()
    repzo_id =data.get("_id")
    if repzo_id :
-      customer = frappe.new_doc("Customer")
-      customer.repzo_id = repzo_id 
-      customer.customer_name = data.get("name")
-      customer.customer_group = repzo.customer_group
-      customer.territory =repzo.territory
-      try :
-         customer.save(ignore_permissions = True)
-         create_success_log("Cautomer"  ,"Customer" , "Customer Created success")
-         frappe.local.response['http_status_code'] = 200
-         return True
-      except Exception as E :
-         create_error_log("api Customer" ,"Customer Create  error " ,E)
-         frappe.local.response['http_status_code'] = 500
+      # check if customer exist pass 
+      if not frappe.db.exists("Custome" , {"repzo_id" : repzo_id}) :
+         customer = frappe.new_doc("Customer")
+         customer.repzo_id = repzo_id 
+         customer.customer_name = data.get("name")
+         customer.customer_group = repzo.customer_group
+         customer.territory =repzo.territory
+         try :
+            customer.save(ignore_permissions = True)
+            create_success_log("Cautomer"  ,"Customer" , "Customer Created success")
+            frappe.local.response['http_status_code'] = 200
+            return True
+         except Exception as E :
+            create_error_log("api Customer" ,"Customer Create  error " ,E)
+            frappe.local.response['http_status_code'] = 500
    else :
       create_error_log("api Customer" ,"Customer Create  error " , "no repzo ")
       frappe.local.response['http_status_code'] = 500
