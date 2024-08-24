@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 
 
 def post_all_items_without_repzo_id():
-   filters = [["repzo_id" , "=" , ""]]
+   filters = {"repzo_id" : ["=" , ""]}
    doctyeps = ["Item" , "Customer" , "Warehouse" ,"Bin"]
    for doc in doctyeps :
       repzo_document_create(doc ,filters)

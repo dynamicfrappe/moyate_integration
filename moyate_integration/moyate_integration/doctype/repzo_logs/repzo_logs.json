@@ -37,12 +37,14 @@
   {
    "fieldname": "error",
    "fieldtype": "Code",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Error"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-02-22 14:16:23.552965",
+ "modified": "2024-05-14 15:09:45.594496",
  "modified_by": "Administrator",
  "module": "moyate_integration",
  "name": "Repzo Logs",

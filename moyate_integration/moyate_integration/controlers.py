@@ -30,6 +30,7 @@ def execute_payload(payload ,filters = None , update =False):
    if data.document == "Bin" :
       if filters :
          filters["actual_qty"]  = [">", 0 ]
+         all = frappe.get_all(f"{data.document}" ,filters = filters ,fields=['*'])
    request_data = []
    if data.document != "Bin" :
 
