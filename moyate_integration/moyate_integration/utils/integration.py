@@ -7,10 +7,10 @@ from datetime import datetime, timedelta
 
 
 def post_all_items_without_repzo_id():
-   filters = [["repzo_id" , "=" , ""]]
+   filters ={ "repzo_id"  :["=" , ""] }
    doctyeps = ["Item" , "Customer" , "Warehouse" ,"Bin"]
    for doc in doctyeps :
-      repzo_document_create(doc ,filters)
+      repzo_document_create(doc ,filters , bin=1)
       last_update = now_datetime()
       frappe.db.sql(f""" UPDATE `tabRepzo Integration Doctypes` SET last_create = '{last_update}'
             WHERE name ='{doc}' """)
@@ -117,7 +117,7 @@ def make_sync_updated_data():
 def sync_now(*ars ,**kwargs) :
    post_all_items_without_repzo_id()
    make_sync()
-   make_sync_updated_data()
+   #make_sync_updated_data()
    # if frappe.flags.in_test:
    #    make_sync()
    #    make_sync_updated_data()

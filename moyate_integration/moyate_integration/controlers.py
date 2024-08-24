@@ -12,7 +12,7 @@ def get_uid(doc):
     stri = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
     return f'{doc}-{stri}'
 
-def execute_payload(payload ,filters = None , update =False):
+def execute_payload(payload ,filters = None , update =False,bin=False):
    """
    param : payload --> Str -- > any Repzo Document Payload name 
            filters  -- > object EXM :->  {"creation":[">=", date time value  ]}
@@ -30,6 +30,7 @@ def execute_payload(payload ,filters = None , update =False):
    if data.document == "Bin" :
       if filters :
          filters["actual_qty"]  = [">", 0 ]
+         all = frappe.get_all(f"{data.document}" ,filters = filters ,fields=['*'])
    request_data = []
    if data.document != "Bin" :
 

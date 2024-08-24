@@ -25,6 +25,13 @@ def get_item_defaulte_tax_template(item )  :
    return template[0].get('item_tax_template') if template else None
 
 
+def get_rep_with_repzo_name(name) :
+   if frappe.db.exists("Sales Person" , {"repzo_name" : name}) :
+      rep = frappe.db.get_value("Sales Person" ,  {"repzo_name" : name} , "name")
+      return rep 
+   else :
+      return False 
+   
 @frappe.whitelist()
 def invoice(*args , **kwargs) :
 
@@ -89,11 +96,19 @@ def invoice(*args , **kwargs) :
       # add Sales Team
       cur_invoice.sales_team =[]
       customer = get_document_object_by_repzo_id("Customer" ,data.get("client_id"))
-      for sales_person in customer.sales_team :
-         cur_invoice.append("sales_team"  , {
-               "sales_person" :sales_person.sales_person ,
-               "allocated_percentage" :sales_person.allocated_percentage
+      rep_name = data.get("creator").get("name") 
+      rep = get_rep_with_repzo_name(rep_name) 
+      if rep :
+          cur_invoice.append("sales_team"  , {
+               "sales_person" :rep ,
+               "allocated_percentage" :100
          })
+      else:
+         for sales_person in customer.sales_team :
+            cur_invoice.append("sales_team"  , {
+                  "sales_person" :sales_person.sales_person ,
+                  "allocated_percentage" :sales_person.allocated_percentage
+            })
       calculate_taxes_and_totals_update(cur_invoice)
       create_error_log("api invoice" ,"Sales Invoice" , "item created success")
       #try :
