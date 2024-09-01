@@ -28,7 +28,7 @@ def get_item_defaulte_tax_template(item )  :
 def get_rep_with_repzo_name(name) :
    if frappe.db.exists("Sales Person" , {"repzo_name" : name}) :
       rep = frappe.db.get_value("Sales Person" ,  {"repzo_name" : name} , "name")
-      return rep 
+      return rep.get("name")
    else :
       return False 
    
@@ -36,6 +36,7 @@ def get_rep_with_repzo_name(name) :
 def invoice(*args , **kwargs) :
 
       """
+      rep = frappe.db.get_value("Sales Person" ,  {"name" : "ابراهيم Ibrahim"} , "name")
       accepted params :
          _id : repzo id 
          business_day : date object
@@ -99,11 +100,13 @@ def invoice(*args , **kwargs) :
       rep_name = data.get("creator").get("name") 
       rep = get_rep_with_repzo_name(rep_name) 
       if rep :
-          cur_invoice.append("sales_team"  , {
+            create_success_log("Sales person"  ,"Sales person" , "Data Created success ith Sales person {rep}")
+            cur_invoice.append("sales_team"  , {
                "sales_person" :rep ,
                "allocated_percentage" :100
-         })
-      else:
+               })
+            
+      if not rep :
          for sales_person in customer.sales_team :
             cur_invoice.append("sales_team"  , {
                   "sales_person" :sales_person.sales_person ,
@@ -143,7 +146,7 @@ def payment(*args , **kwargs) :
          amount = float(doc.get("amount") or 0) / 1000
          if repzo_id :
             create_payment(repzo_id ,amount)
-            create_error_log("api payment" ,"Payment Entry" , f"{repzo_id} - amount {amount}")
+            # create_error_log("api payment" ,"Payment Entry" , f"{repzo_id} - amount {amount}")
 
          if not repzo_id :
             create_error_log("api payment" ,"Payment Entry" , "No repzo if found - amount {amount}")
