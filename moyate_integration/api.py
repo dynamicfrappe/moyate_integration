@@ -141,9 +141,10 @@ def payment(*args , **kwargs) :
 
    if data :
       #("paymentsData").get("payments")[0].get("fullinvoice_id")
+      create_error_log("api payment" ,"Payment Entry" , f"{data}")
       for doc in data.get("LinkedTxn").get("Txn_serial_number") :
          repzo_id = get_invoice_id(doc.get("formatted"))
-         amount = float(doc.get("amount") or 0) / 1000
+         amount = float(doc.get("Txn_invoice_total") or 0) / 1000
          if repzo_id :
             create_payment(repzo_id ,amount)
             # create_error_log("api payment" ,"Payment Entry" , f"{repzo_id} - amount {amount}")
