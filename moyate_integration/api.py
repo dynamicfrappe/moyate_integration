@@ -139,6 +139,7 @@ def payment(*args , **kwargs) :
    except :
       data = kwargs
 
+
    if data :
       #("paymentsData").get("payments")[0].get("fullinvoice_id")
       create_error_log("api payment" ,"Payment Entry" , f"{data.get('LinkedTxn').get('Txn_serial_number').get('formatted')}")
