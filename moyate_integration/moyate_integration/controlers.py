@@ -235,9 +235,9 @@ def create_payment(repzo_id , amount = False):
 
       if not amount or amount == 0:
          temp = doc.grand_total
-      elif amount >= doc.grand_total:
-         temp = doc.grand_total
-      elif amount < doc.grand_total:
+      elif amount >= doc.outstanding_amount :
+         temp = doc.outstanding_amount 
+      elif amount < doc.outstanding_amount :
          temp = amount
 
       reference = {
