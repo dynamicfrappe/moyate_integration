@@ -28,7 +28,7 @@ def get_item_defaulte_tax_template(item )  :
 def get_rep_with_repzo_name(name) :
    if frappe.db.exists("Sales Person" , {"repzo_name" : name}) :
       rep = frappe.db.get_value("Sales Person" ,  {"repzo_name" : name} , "name")
-      return rep.get("name")
+      return rep
    else :
       return False 
    
@@ -52,7 +52,7 @@ def invoice(*args , **kwargs) :
       except :
          data = kwargs
       #data = json.loads(kwargs)
-   
+
       create_success_log("Sales invocie"  ,"Sales Invoice" , "Data Created success")
       repzo_id =data.get("_id")
       cur_invoice = False
@@ -77,23 +77,43 @@ def invoice(*args , **kwargs) :
       #cur_invoice.taxes_and_charges = repzo.tax_template
      
       cur_invoice.items =[]
-      for item in data.get("items")  :
-         item_object = item.get("variant")
-         object = get_document_object_by_repzo_id("Item" , item_object.get("product_id"))
-         uom_obj = item.get("measureunit")
-         uom = get_document_object_by_repzo_id("UOM" , uom_obj.get("_id"))
-         factor= float(uom_obj.get("factor") or 1)
-         qty = float(item.get("qty") ) * factor
-         cur_invoice.append("items"  , { 
-                                          "item_code"   : object.name ,
-                                          "item_name"   : object.item_name , 
-                                          "description" : object.description ,
-                                          "uom"    : uom.name ,
-                                          "qty" : qty ,
-                                          "item_tax_template" : get_item_defaulte_tax_template(object.name) ,
-                                          "rate":(float(item.get("total_before_tax") or 1 )/1000)/float(qty)
-                                       }
-                           )
+      if data.get("items") :
+         for item in data.get("items")  :
+            item_object = item.get("variant")
+            object = get_document_object_by_repzo_id("Item" , item_object.get("product_id"))
+            uom_obj = item.get("measureunit")
+            uom = get_document_object_by_repzo_id("UOM" , uom_obj.get("_id"))
+            factor= float(uom_obj.get("factor") or 1)
+            qty = float(item.get("qty") ) * factor
+            cur_invoice.append("items"  , { 
+                                             "item_code"   : object.name ,
+                                             "item_name"   : object.item_name , 
+                                             "description" : object.description ,
+                                             "uom"    : uom.name ,
+                                             "qty" : qty ,
+                                             "item_tax_template" : get_item_defaulte_tax_template(object.name) ,
+                                             "rate":(float(item.get("total_before_tax") or 1 )/1000)/float(qty)
+                                          }
+                              )
+      elif data.get("return_items") :
+         cur_invoice.is_return = 1
+         for item in data.get("return_items")  :
+            item_object = item.get("variant")
+            object = get_document_object_by_repzo_id("Item" , item_object.get("product_id"))
+            uom_obj = item.get("measureunit")
+            uom = get_document_object_by_repzo_id("UOM" , uom_obj.get("_id"))
+            factor= float(uom_obj.get("factor") or 1)
+            qty = float(item.get("qty") ) * factor
+            cur_invoice.append("items"  , { 
+                                             "item_code"   : object.name ,
+                                             "item_name"   : object.item_name , 
+                                             "description" : object.description ,
+                                             "uom"    : uom.name ,
+                                             "qty" :  qty ,
+                                             "item_tax_template" : get_item_defaulte_tax_template(object.name) ,
+                                             "rate":(float(item.get("total_before_tax") or 1 )/1000)/float(qty)
+                                          }
+                              )
       # add Sales Team
       cur_invoice.sales_team =[]
       customer = get_document_object_by_repzo_id("Customer" ,data.get("client_id"))
