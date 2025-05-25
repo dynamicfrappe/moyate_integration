@@ -1,4 +1,3 @@
-from dynamic.dynamic.hooks import after_install
 from . import __version__ as app_version
 
 app_name = "moyate_integration"
