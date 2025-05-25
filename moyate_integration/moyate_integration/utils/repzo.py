@@ -116,7 +116,7 @@ def repzo_document_update(doctype ,filters= None) :
 
 
 @frappe.whitelist()
-def repzo_document_create(doctype ,filters= None) :
+def repzo_document_create(doctype ,filters= None ,bin=False)  :
    """
     params doctype string doctype name 
     filters -- > object EXM :->  {"creation":[">=", date time value  ]}
@@ -126,7 +126,7 @@ def repzo_document_create(doctype ,filters= None) :
    for i in repzo.items :
       if i.document == doctype :
          #print( f"{i.document} = {doctype}")
-         data_list = execute_payload(doctype ,filters )
+         data_list = execute_payload(doctype ,filters ,bin=False)
          repzo_post_request(data_list ,doctype , i.method)
 
 

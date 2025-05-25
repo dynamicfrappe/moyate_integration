@@ -26,10 +26,11 @@ def async_submit_stock_entry(doc ,*args , **kwargs) :
                             get_uid(doc.name))
 
 def submit_stock_entry(doc ,*args , **kwargs) :
-    if frappe.flags.in_test:
-      async_submit_stock_entry(doc ) 
+    async_submit_stock_entry(doc ) 
+    # if frappe.flags.in_test:
+    #   async_submit_stock_entry(doc ) 
 
-    else:
+    # else:
       
-        async_submit_stock_entry(doc ) 
+    #     async_submit_stock_entry(doc ) 
      

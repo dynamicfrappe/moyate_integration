@@ -12,7 +12,7 @@ def get_uid(doc):
     stri = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
     return f'{doc}-{stri}'
 
-def execute_payload(payload ,filters = None , update =False):
+def execute_payload(payload ,filters = None , update =False,bin=False):
    """
    param : payload --> Str -- > any Repzo Document Payload name 
            filters  -- > object EXM :->  {"creation":[">=", date time value  ]}
@@ -30,6 +30,7 @@ def execute_payload(payload ,filters = None , update =False):
    if data.document == "Bin" :
       if filters :
          filters["actual_qty"]  = [">", 0 ]
+         all = frappe.get_all(f"{data.document}" ,filters = filters ,fields=['*'])
    request_data = []
    if data.document != "Bin" :
 
@@ -229,11 +230,14 @@ def create_payment(repzo_id , amount = False):
       log.received_amount = amount if amount else doc.grand_total
 
       temp = 0 
+
+
+
       if not amount or amount == 0:
          temp = doc.grand_total
-      elif amount >= doc.grand_total:
-         temp = doc.grand_total
-      elif amount < doc.grand_total:
+      elif amount >= doc.outstanding_amount :
+         temp = doc.outstanding_amount 
+      elif amount < doc.outstanding_amount :
          temp = amount
 
       reference = {
@@ -260,3 +264,19 @@ def create_payment(repzo_id , amount = False):
       except Exception as e :
          create_error_log("create_payment" , "Sales Invoice" , e )
          return False
+
+# from moyate_integration.moyate_integration.controlers import get_invoice_id   get_invoice_id("INV-1006-616")
+
+def get_invoice_id(serial) :
+   repzo = get_repzo_setting()
+   #https://sv.api.repzo.me/fullinvoices?is_void=false&search=INV-1545-368
+   url = f"{repzo.url}fullinvoices?is_void=false&search={serial}"
+   headers= {"api-key" : repzo.api_key , "Content-Type" :"application/json"}
+   request = requests.get(url , headers=headers)
+   if request.status_code not in [200 , 201] :
+      create_error_log("create_payment" , f"Sales Invoice {serial}" , f"Has error {request.text} " )
+   response = request.json()
+   data = response.get("data")
+   id = data[0].get("_id")
+   return id
+   

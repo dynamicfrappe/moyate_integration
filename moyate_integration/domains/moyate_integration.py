@@ -71,6 +71,22 @@ data = {
                 # "read_only" :1
             },
         ],
+        "Sales Person" :[
+           {
+                "label":_("Repzo name"),
+                "fieldname":"repzo_name",
+                "fieldtype":"Data",
+                "insert_after":"employee",
+                # "read_only" :1
+            },
+            {
+                "label":_("Repzo id"),
+                "fieldname":"repzo_id",
+                "fieldtype":"Data",
+                "insert_after":"repzo_name",
+                "read_only" :1
+            },
+        ]
  
     },
       "properties": [

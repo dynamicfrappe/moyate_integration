@@ -1,3 +1,4 @@
+from dynamic.dynamic.hooks import after_install
 from . import __version__ as app_version
 
 app_name = "moyate_integration"
@@ -102,6 +103,15 @@ app_license = "MIT"
 #		"on_trash": "method"
 #	}
 # }
+after_migrate = [
+    "moyate_integration.install.after_install"
+]
+after_install = [	
+    "moyate_integration.install.after_install"
+	]
+
+
+
 doc_events = {
     "Sales Invoice" : {
         "on_submit" :"moyate_integration.controllers.sales_invoice.submit_sales_invoice" ,
@@ -212,7 +222,9 @@ domains = {
 
 scheduler_events = {
     "cron": {
-		"0/5 * * * *": ["moyate_integration.moyate_integration.utils.integration.sync_now"]
+		"0/5 * * * *": ["moyate_integration.moyate_integration.utils.integration.sync_now",
+						"moyate_integration.api.enqueue_get_or_post_sales_person"
+					]
         }
 }
 

@@ -7,7 +7,7 @@ from moyate_integration.moyate_integration.controlers import ( create_error_log 
                                                                get_document_object_by_repzo_id ,
                                                                create_payment)
 from frappe.utils import today
-
+import requests
 """
 Create invoice
 
@@ -25,10 +25,18 @@ def get_item_defaulte_tax_template(item )  :
    return template[0].get('item_tax_template') if template else None
 
 
+def get_rep_with_repzo_name(name) :
+   if frappe.db.exists("Sales Person" , {"repzo_name" : name}) :
+      rep = frappe.db.get_value("Sales Person" ,  {"repzo_name" : name} , "name")
+      return rep
+   else :
+      return False 
+   
 @frappe.whitelist()
 def invoice(*args , **kwargs) :
 
       """
+      rep = frappe.db.get_value("Sales Person" ,  {"repzo_name" : "Radwan"} , "name")
       accepted params :
          _id : repzo id 
          business_day : date object
@@ -44,7 +52,7 @@ def invoice(*args , **kwargs) :
       except :
          data = kwargs
       #data = json.loads(kwargs)
-   
+
       create_success_log("Sales invocie"  ,"Sales Invoice" , "Data Created success")
       repzo_id =data.get("_id")
       cur_invoice = False
@@ -69,31 +77,59 @@ def invoice(*args , **kwargs) :
       #cur_invoice.taxes_and_charges = repzo.tax_template
      
       cur_invoice.items =[]
-      for item in data.get("items")  :
-         item_object = item.get("variant")
-         object = get_document_object_by_repzo_id("Item" , item_object.get("product_id"))
-         uom_obj = item.get("measureunit")
-         uom = get_document_object_by_repzo_id("UOM" , uom_obj.get("_id"))
-         factor= float(uom_obj.get("factor") or 1)
-         qty = float(item.get("qty") ) * factor
-         cur_invoice.append("items"  , { 
-                                          "item_code"   : object.name ,
-                                          "item_name"   : object.item_name , 
-                                          "description" : object.description ,
-                                          "uom"    : uom.name ,
-                                          "qty" : qty ,
-                                          "item_tax_template" : get_item_defaulte_tax_template(object.name) ,
-                                          "rate":(float(item.get("total_before_tax") or 1 )/1000)/float(qty)
-                                       }
-                           )
+      if data.get("items") :
+         for item in data.get("items")  :
+            item_object = item.get("variant")
+            object = get_document_object_by_repzo_id("Item" , item_object.get("product_id"))
+            uom_obj = item.get("measureunit")
+            uom = get_document_object_by_repzo_id("UOM" , uom_obj.get("_id"))
+            factor= float(uom_obj.get("factor") or 1)
+            qty = float(item.get("qty") ) * factor
+            cur_invoice.append("items"  , { 
+                                             "item_code"   : object.name ,
+                                             "item_name"   : object.item_name , 
+                                             "description" : object.description ,
+                                             "uom"    : uom.name ,
+                                             "qty" : qty ,
+                                             "item_tax_template" : get_item_defaulte_tax_template(object.name) ,
+                                             "rate":(float(item.get("total_before_tax") or 1 )/1000)/float(qty)
+                                          }
+                              )
+      elif data.get("return_items") :
+         cur_invoice.is_return = 1
+         for item in data.get("return_items")  :
+            item_object = item.get("variant")
+            object = get_document_object_by_repzo_id("Item" , item_object.get("product_id"))
+            uom_obj = item.get("measureunit")
+            uom = get_document_object_by_repzo_id("UOM" , uom_obj.get("_id"))
+            factor= float(uom_obj.get("factor") or 1)
+            qty = float(item.get("qty") ) * factor
+            cur_invoice.append("items"  , { 
+                                             "item_code"   : object.name ,
+                                             "item_name"   : object.item_name , 
+                                             "description" : object.description ,
+                                             "uom"    : uom.name ,
+                                             "qty" :  qty ,
+                                             "item_tax_template" : get_item_defaulte_tax_template(object.name) ,
+                                             "rate":(float(item.get("total_before_tax") or 1 )/1000)/float(qty)
+                                          }
+                              )
       # add Sales Team
       cur_invoice.sales_team =[]
       customer = get_document_object_by_repzo_id("Customer" ,data.get("client_id"))
-      for sales_person in customer.sales_team :
-         cur_invoice.append("sales_team"  , {
-               "sales_person" :sales_person.sales_person ,
-               "allocated_percentage" :sales_person.allocated_percentage
-         })
+      rep_name = data.get("creator").get("name") 
+      rep = get_rep_with_repzo_name(rep_name) 
+      if rep :
+            cur_invoice.append("sales_team"  , {
+               "sales_person" :rep ,
+               "allocated_percentage" :100
+               })       
+      else :
+         for sales_person in customer.sales_team :
+            cur_invoice.append("sales_team"  , {
+                  "sales_person" :sales_person.sales_person ,
+                  "allocated_percentage" :sales_person.allocated_percentage
+            })
       calculate_taxes_and_totals_update(cur_invoice)
       create_error_log("api invoice" ,"Sales Invoice" , "item created success")
       #try :
@@ -112,7 +148,7 @@ def invoice(*args , **kwargs) :
    
 
 
-
+from moyate_integration.moyate_integration.controlers import get_invoice_id
 @frappe.whitelist(allow_guest=True)
 def payment(*args , **kwargs) :
    repzo_id  = None   
@@ -121,17 +157,19 @@ def payment(*args , **kwargs) :
    except :
       data = kwargs
 
+
    if data :
       #("paymentsData").get("payments")[0].get("fullinvoice_id")
-      for doc in data.get("paymentsData").get("payments") :
-         repzo_id = doc.get("fullinvoice_id")
-         amount = float(doc.get("amount") or 0) / 1000
-         if repzo_id :
-            create_payment(repzo_id ,amount)
-            create_error_log("api payment" ,"Payment Entry" , f"{repzo_id} - amount {amount}")
+      create_error_log("api payment" ,"Payment Entry" , f"{data.get('LinkedTxn').get('Txn_serial_number').get('formatted')}")
+      doc =  data.get("LinkedTxn")
+      repzo_id = get_invoice_id(doc.get("Txn_serial_number").get("formatted"))
+      amount = float(data.get("amount") or 0) / 1000
+      if repzo_id :
+         create_payment(repzo_id ,amount)
+         # create_error_log("api payment" ,"Payment Entry" , f"{repzo_id} - amount {amount}")
 
-         if not repzo_id :
-            create_error_log("api payment" ,"Payment Entry" , "No repzo if found - amount {amount}")
+      if not repzo_id :
+         create_error_log("api payment" ,"Payment Entry" , "No repzo if found - amount {amount}")
       frappe.local.response['http_status_code'] = 200
       return True 
    return False
@@ -152,20 +190,78 @@ def customer(*args , **kwargs) :
    repzo =get_repzo_setting()
    repzo_id =data.get("_id")
    if repzo_id :
-      customer = frappe.new_doc("Customer")
-      customer.repzo_id = repzo_id 
-      customer.customer_name = data.get("name")
-      customer.customer_group = repzo.customer_group
-      customer.territory =repzo.territory
-      try :
-         customer.save(ignore_permissions = True)
-         create_success_log("Cautomer"  ,"Customer" , "Customer Created success")
-         frappe.local.response['http_status_code'] = 200
-         return True
-      except Exception as E :
-         create_error_log("api Customer" ,"Customer Create  error " ,E)
-         frappe.local.response['http_status_code'] = 500
+      # check if customer exist pass 
+      if not frappe.db.exists("Custome" , {"repzo_id" : repzo_id}) :
+         customer = frappe.new_doc("Customer")
+         customer.repzo_id = repzo_id 
+         customer.customer_name = data.get("name")
+         customer.customer_group = repzo.customer_group
+         customer.territory =repzo.territory
+         try :
+            customer.save(ignore_permissions = True)
+            create_success_log("Cautomer"  ,"Customer" , "Customer Created success")
+            frappe.local.response['http_status_code'] = 200
+            return True
+         except Exception as E :
+            create_error_log("api Customer" ,"Customer Create  error " ,E)
+            frappe.local.response['http_status_code'] = 500
    else :
       create_error_log("api Customer" ,"Customer Create  error " , "no repzo ")
       frappe.local.response['http_status_code'] = 500
       return True
+   
+   
+
+@frappe.whitelist()
+def enqueue_get_or_post_sales_person():
+   frappe.enqueue(
+      get_or_post_sales_person,
+      queue='long',
+      timeout=300,
+      event='get_or_post_sales_person'
+   )
+
+@frappe.whitelist(allow_guest=True)
+def get_or_post_sales_person() :
+   url = "https://sv.api.repzo.me/rep?disabled=false"
+   repzo_settings = frappe.get_single("Repzo Integration")
+
+   headers = {
+      "Content-Type": "application/json",
+      "api-key" : repzo_settings.api_key
+   }
+   
+   request = requests.get(url, headers=headers)
+   if request.status_code not in [200, 201] :
+      create_error_log("get_or_post_sales_person", "Sales Person", f"Has error {request.text} " )
+      return False
+   response = request.json()
+   data = response.get("data")
+   # check for rep name exists in sales persopn and if not , create new sales person
+   for rep in data :
+      rep_name = rep.get("name")
+      repzo_id = rep.get("_id")
+      if not frappe.db.exists("Sales Person", {"repzo_name" : rep_name}) :
+         sales_person = frappe.new_doc("Sales Person")
+         sales_person.repzo_name = rep_name
+         sales_person.sales_person_name = rep_name
+         sales_person.repzo_id = repzo_id
+         sales_person.save(ignore_permissions = True)
+      else :
+         # check if there is an update in the date or not 
+         sales_person = frappe.get_doc("Sales Person", {"repzo_name" : rep_name})
+         if not sales_person.repzo_id :
+            sales_person.repzo_id = repzo_id
+            sales_person.save(ignore_permissions = True)
+
+         if sales_person.repzo_id != repzo_id :
+            sales_person.repzo_id = repzo_id
+            sales_person.save(ignore_permissions = True)
+
+   frappe.local.response['http_status_code'] = 200
+   frappe.response.message = "Enqueued Method Sales Person"
+
+   return 
+   
+   
+   
