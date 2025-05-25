@@ -17,12 +17,13 @@ On Save
 ## Documentation
 
 ### create_adjustment(warehouse, qty, item_code, name)
-'''
-   warehouse -- string warehouse name
-   actual_qty -- float negative or positive 
-   item_code -- string Item Code
-   name -- string source document name
-'''
+ #### Args
+
+   - warehouse -- string warehouse name
+   - actual_qty -- float negative or positive 
+   - item_code -- string Item Code
+   - name -- string source document name
+
 #### Description:
 
 ###### This function sends a stock adjustment request to the Repzo system by triggering the adjust-inventory webhook. It is used to synchronize inventory changes (positive or negative) from Frappe/ERPNext to Repzo.
