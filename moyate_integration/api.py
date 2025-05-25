@@ -212,54 +212,33 @@ def customer(*args , **kwargs) :
    
    
 
-@frappe.whitelist()
-def enqueue_get_or_post_sales_person():
-   frappe.enqueue(
-      get_or_post_sales_person,
-      queue='long',
-      timeout=300,
-      event='get_or_post_sales_person'
-   )
 
-@frappe.whitelist(allow_guest=True)
-def get_or_post_sales_person() :
-   url = "https://sv.api.repzo.me/rep?disabled=false"
-   repzo_settings = frappe.get_single("Repzo Integration")
 
-   headers = {
-      "Content-Type": "application/json",
-      "api-key" : repzo_settings.api_key
-   }
-   
-   request = requests.get(url, headers=headers)
-   if request.status_code not in [200, 201] :
-      create_error_log("get_or_post_sales_person", "Sales Person", f"Has error {request.text} " )
-      return False
-   response = request.json()
-   data = response.get("data")
+@frappe.whitelist(allow_guest=False)
+def post_sales_person(*args , **kwargs) :
+   data = kwargs
    # check for rep name exists in sales persopn and if not , create new sales person
-   for rep in data :
-      rep_name = rep.get("name")
-      repzo_id = rep.get("_id")
-      if not frappe.db.exists("Sales Person", {"repzo_name" : rep_name}) :
-         sales_person = frappe.new_doc("Sales Person")
-         sales_person.repzo_name = rep_name
-         sales_person.sales_person_name = rep_name
+   rep_name = data.get("name")
+   repzo_id = data.get("_id")
+   if not frappe.db.exists("Sales Person", {"repzo_name" : rep_name}) :
+      sales_person = frappe.new_doc("Sales Person")
+      sales_person.repzo_name = rep_name
+      sales_person.sales_person_name = rep_name
+      sales_person.repzo_id = repzo_id
+      sales_person.save(ignore_permissions = True)
+   else :
+      # check if there is an update in the date or not 
+      sales_person = frappe.get_doc("Sales Person", {"repzo_name" : rep_name})
+      if not sales_person.repzo_id :
          sales_person.repzo_id = repzo_id
          sales_person.save(ignore_permissions = True)
-      else :
-         # check if there is an update in the date or not 
-         sales_person = frappe.get_doc("Sales Person", {"repzo_name" : rep_name})
-         if not sales_person.repzo_id :
-            sales_person.repzo_id = repzo_id
-            sales_person.save(ignore_permissions = True)
 
-         if sales_person.repzo_id != repzo_id :
-            sales_person.repzo_id = repzo_id
-            sales_person.save(ignore_permissions = True)
+      if sales_person.repzo_id != repzo_id :
+         sales_person.repzo_id = repzo_id
+         sales_person.save(ignore_permissions = True)
 
    frappe.local.response['http_status_code'] = 200
-   frappe.response.message = "Enqueued Method Sales Person"
+   frappe.response.message = "Get New Sales Persons Or Update Them Done Correctly"
 
    return 
    

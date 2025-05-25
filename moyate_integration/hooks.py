@@ -222,7 +222,6 @@ domains = {
 scheduler_events = {
     "cron": {
 		"0/5 * * * *": ["moyate_integration.moyate_integration.utils.integration.sync_now",
-						"moyate_integration.api.enqueue_get_or_post_sales_person"
 					]
         }
 }
