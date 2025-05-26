@@ -97,6 +97,9 @@ def invoice(*args , **kwargs) :
                               )
       elif data.get("return_items") :
          cur_invoice.is_return = 1
+         if data.get("returned_from") :
+            if frappe.db.exists("Sales Invoice" , {"repzo_id" : data.get("returned_from")} ) :
+               cur_invoice.return_against = frappe.get_value("Sales Invoice" , {"repzo_id" : data.get("returned_from")} ,'name')
          for item in data.get("return_items")  :
             item_object = item.get("variant")
             object = get_document_object_by_repzo_id("Item" , item_object.get("product_id"))
