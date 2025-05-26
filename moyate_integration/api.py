@@ -196,6 +196,8 @@ def customer(*args , **kwargs) :
          customer.repzo_id = repzo_id 
          customer.customer_name = data.get("name")
          customer.customer_group = repzo.customer_group
+         customer.tax_id = data.get("tax_number")
+         customer.receiver_id = data.get("tax_number")
          customer.territory =repzo.territory
          try :
             customer.save(ignore_permissions = True)
