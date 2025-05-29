@@ -229,6 +229,7 @@ def post_sales_person(*args , **kwargs) :
       sales_person = frappe.new_doc("Sales Person")
       sales_person.repzo_name = rep_name
       sales_person.sales_person_name = rep_name
+      sales_person.enabled = 1 
       sales_person.repzo_id = repzo_id
       sales_person.save(ignore_permissions = True)
    else :
@@ -242,6 +243,8 @@ def post_sales_person(*args , **kwargs) :
          sales_person.repzo_id = repzo_id
          sales_person.save(ignore_permissions = True)
 
+   frappe.db.commit()
+   create_success_log("Sales Person"  ,"Sales Person" , "Get New Sales Persons Or Update Them Done Correctly")
    frappe.local.response['http_status_code'] = 200
    frappe.response.message = "Get New Sales Persons Or Update Them Done Correctly"
 
