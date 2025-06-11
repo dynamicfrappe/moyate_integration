@@ -1,3 +1,4 @@
+from pydoc import cli
 import frappe 
 import json 
 from moyate_integration.moyate_integration.utils.taxts import calculate_taxes_and_totals_update
@@ -5,7 +6,8 @@ from moyate_integration.moyate_integration.controlers import ( create_error_log 
                                                                create_success_log ,
                                                                get_repzo_setting ,
                                                                get_document_object_by_repzo_id ,
-                                                               create_payment)
+                                                               create_payment,
+                                                               create_payment_for_reconcilation)
 from frappe.utils import today
 import requests
 """
@@ -163,18 +165,26 @@ def payment(*args , **kwargs) :
 
    if data :
       #("paymentsData").get("payments")[0].get("fullinvoice_id")
-      create_error_log("api payment" ,"Payment Entry" , f"{data.get('LinkedTxn').get('Txn_serial_number').get('formatted')}")
-      doc =  data.get("LinkedTxn")
-      repzo_id = get_invoice_id(doc.get("Txn_serial_number").get("formatted"))
+      # create_error_log("api payment" ,"Payment Entry" , f"{data.get('LinkedTxn').get('Txn_serial_number').get('formatted')}")
+      client_id = data.get("client_id")
+      creator = data.get("creator").get("name")
+      reference_table = data.get("paymentsData").get("payments")
       amount = float(data.get("amount") or 0) / 1000
+      
+      
+      if data.get("LinkedTxn") :
+         doc =  data.get("LinkedTxn")
+         repzo_id = get_invoice_id(doc.get("Txn_serial_number").get("formatted"))
       if repzo_id :
-         create_payment(repzo_id ,amount)
+         create_payment(repzo_id ,amount,client_id,creator = creator)
          # create_error_log("api payment" ,"Payment Entry" , f"{repzo_id} - amount {amount}")
-
-      if not repzo_id :
+      else:
+         create_payment_for_reconcilation(client_id=data.get("client_id"),amount = amount, creator = creator,reference_table = reference_table)
+         create_success_log("api payment","Payment Entry", f"amount {amount}")
          create_error_log("api payment" ,"Payment Entry" , "No repzo if found - amount {amount}")
-      frappe.local.response['http_status_code'] = 200
-      return True 
+      # frappe.local.response['http_status_code'] = 200
+      # frappe.local.response['message'] = "Payment Done Correctly"
+      return  
    return False
 
 
