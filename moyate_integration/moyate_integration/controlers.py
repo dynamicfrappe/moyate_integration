@@ -376,6 +376,9 @@ def create_payment_for_reconcilation(client_id, amount = False, creator = None, 
       # Get outstanding documents using standard ERPNext function
       outstanding_documents = get_outstanding_reference_documents(args)
       
+      if not outstanding_documents:
+         frappe.local.response["message"] = "No outstanding invoices found for the customer"
+         return 
       print(f"Outstanding documents from standard function: {outstanding_documents}")
       
       # Create payment entry
@@ -424,7 +427,7 @@ def create_payment_for_reconcilation(client_id, amount = False, creator = None, 
          # Use the actual outstanding amount from the standard function
          actual_outstanding = float(outstanding_doc.get("outstanding_amount", 0))
          allocated_amount = min(requested_amount, actual_outstanding)
-         
+         print(f" ======> Requested amount: {requested_amount}, Actual outstanding: {actual_outstanding}, Allocated amount: {allocated_amount}")
          if allocated_amount <= 0:
                print(f"No valid amount to allocate for invoice {outstanding_doc.voucher_no}")
                continue
@@ -576,6 +579,7 @@ def create_payment_for_reconcilation(client_id, amount = False, creator = None, 
    
    
 # from moyate_integration.moyate_integration.controlers import get_invoice_id   get_invoice_id("INV-1006-616")
+
 
 def get_invoice_id(serial) :
    repzo = get_repzo_setting()

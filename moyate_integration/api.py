@@ -196,8 +196,32 @@ def payment(*args , **kwargs) :
    return False
 
 
-
-
+@frappe.whitelist(allow_guest=True)
+def payment_refund(*args , **kwargs):
+   repzo_id  = None   
+   try :
+      data = json.loads(kwargs)
+   except :
+      data = kwargs
+      
+   if data :
+      if data.get("LinkedTxn") :
+         doc =  data.get("LinkedTxn")
+         repzo_id = get_invoice_id(doc.get("Txn_serial_number").get("formatted"))
+      if repzo_id :
+         if frappe.db.exists("Payment Entry",{'repzo_id':repzo_id,'docstatus':1}):
+            payment_doc = frappe.get_doc("Payment Entry",{'repzo_id':repzo_id})
+         try:
+            payment_doc.cancel()
+            frappe.local.response['http_status_code'] = 200
+            frappe.local.response['message'] = "Payment Refund Done Correctly"
+         except Exception as e:
+            create_error_log("api payment" ,"Payment Entry" , e)
+            create_error_log("api payment" ,"Payment Entry" , "No repzo if found")
+            frappe.local.response['http_status_code'] = 402
+            frappe.local.response['message'] = "Problem With Refund"
+            
+            
 
 
 @frappe.whitelist(allow_guest=True)
