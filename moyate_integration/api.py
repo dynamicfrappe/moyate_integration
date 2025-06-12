@@ -36,8 +36,8 @@ def get_rep_with_repzo_name(name) :
    
 
 def get_rep_with_repzo_id(rep_id) :
-   if frappe.db.exists("Sales Person" , {"repzo_name" : rep_id}) :
-      rep = frappe.db.get_value("Sales Person" ,  {"repzo_name" : rep_id} , "name")
+   if frappe.db.exists("Sales Person" , {"repzo_id" : rep_id}) :
+      rep = frappe.db.get_value("Sales Person" ,  {"repzo_id" : rep_id} , "name")
       return rep
    else :
       return False 
@@ -211,6 +211,7 @@ def customer(*args , **kwargs) :
    repzo =get_repzo_setting()
    repzo_id =data.get("_id")
    assigned_to = data.get("assigned_to")
+   print(assigned_to)
    if repzo_id :
       # check if customer exist pass 
       if not frappe.db.exists("Custome" , {"repzo_id" : repzo_id}) :
@@ -222,6 +223,7 @@ def customer(*args , **kwargs) :
          customer.receiver_id = data.get("tax_number")
          customer.territory =repzo.territory
          if assigned_to :
+            print(assigned_to)
             for i in assigned_to:
                print(f"Rep ID{i}")
                customer.append("sales_team" , {
