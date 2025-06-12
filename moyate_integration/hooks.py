@@ -114,7 +114,8 @@ after_install = [
 doc_events = {
     "Sales Invoice" : {
         "on_submit" :"moyate_integration.controllers.sales_invoice.submit_sales_invoice" ,
-        "validate" :"moyate_integration.controllers.sales_invoice.validate_sales_invoice"
+        "validate" :"moyate_integration.controllers.sales_invoice.validate_sales_invoice",
+        "on_update_after_submit" : "moyate_integration.controllers.sales_invoice.change_sales_person_commission_log"
 	 } ,
      "Delivery Note": {
         "on_submit" :"moyate_integration.controllers.sales_invoice.submit_delivery_note"

@@ -55,3 +55,22 @@ def validate_sales_invoice(doc ,*args , **kwargs)  :
         item.item_tax_template = get_item_defaulte_tax_template(item.item_code)
     get_item_tax_details(doc)
     calculate_taxes_and_totals_update(doc)
+
+
+
+# on update after submit sales invoice 
+def change_sales_person_commission_log(doc,method = None):
+    """
+    Change the sales person commission log after changing the sales person in the sales team table in sales invoice.
+
+    """
+    if doc.sales_team:
+        for record in doc.sales_team:
+            if record.sales_person:
+                if frappe.db.exists("Sales Person Commetion", {'invoice': doc.name}):
+                    name = frappe.db.get_value("Sales Person Commetion", {'invoice': doc.name}, 'name')
+                    sales_person_comm = frappe.get_doc("Sales Person Commetion", name)
+                    sales_person_comm.sales_person = record.sales_person
+                    sales_person_comm.save()
+                    frappe.db.commit() 
+    
