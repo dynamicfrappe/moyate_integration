@@ -67,8 +67,8 @@ def change_sales_person_commission_log(doc,method = None):
     if doc.sales_team:
         for record in doc.sales_team:
             if record.sales_person:
-                if frappe.db.exists("Sales Person Commetion", {'invoice': doc.name}):
-                    name = frappe.db.get_value("Sales Person Commetion", {'invoice': doc.name}, 'name')
+                if frappe.db.exists("Sales Person Commetion", {'invocie': doc.name}):
+                    name = frappe.db.get_value("Sales Person Commetion", {'invocie': doc.name}, 'name')
                     sales_person_comm = frappe.get_doc("Sales Person Commetion", name)
                     sales_person_comm.sales_person = record.sales_person
                     sales_person_comm.save()
