@@ -587,7 +587,7 @@ def get_invoice_id(serial) :
    url = f"{repzo.url}fullinvoices?is_void=false&search={serial}"
    headers= {"api-key" : repzo.api_key , "Content-Type" :"application/json"}
    request = requests.get(url , headers=headers)
-   if request.http_status_code not in [200 , 201] :
+   if request.status_code not in [200 , 201] :
       create_error_log("create_payment" , f"Sales Invoice {serial}" , f"Has error {request.text} " )
    response = request.json()
    data = response.get("data")
