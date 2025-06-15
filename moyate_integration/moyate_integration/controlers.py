@@ -207,7 +207,14 @@ def create_payment(repzo_id = None , amount = False,client_id = None,creator = N
          create_error_log(create_payment , "Sales Invoice" , e )
          return False
 
-      sales_person = get_rep_with_repzo_name(creator) 
+      # sales_person = get_rep_with_repzo_name(creator) 
+      
+      sales_team = frappe.get_all(
+         "Sales Team",
+         filters={"parent": doc.name},
+         fields=["sales_person"]
+      )      
+      sales_person = sales_team[0]['sales_person']
       customer = frappe.get_value("Customer", {"repzo_id" : client_id},'name')
       
       doc_mode_of_payment = frappe.get_doc("Mode of Payment" , frappe.db.get_value("Sales Person" , sales_person , 'mode_of_payment'))
