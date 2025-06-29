@@ -349,7 +349,14 @@ def create_payment(repzo_id = None , amount = False,client_id = None,creator = N
 def create_payment_for_reconcilation(client_id, amount = False, creator = None, reference_table=None):
    repzo_setting = frappe.get_single("Repzo Integration")
    customer = frappe.get_value("Customer", {"repzo_id": client_id}, 'name')
-   sales_person = get_rep_with_repzo_name(creator)
+   linked_invoice_repzo_id = reference_table[0].get("fullinvoice_id")
+   sales_invoice_name = frappe.get_value("Sales Invoice", {"repzo_id": linked_invoice_repzo_id}, "name")
+   sales_team = frappe.get_all(
+         "Sales Team",
+         filters={"parent": sales_invoice_name},
+         fields=["sales_person"]
+      )      
+   sales_person = sales_team[0]['sales_person']
 
    doc_mode_of_payment = frappe.get_doc("Mode of Payment", frappe.db.get_value("Sales Person", sales_person, 'mode_of_payment'))
    accounts = frappe.get_all(

@@ -62,6 +62,15 @@ data = {
                  "read_only" :1
             },
         ],
+           'Payment Entry':[
+            {
+                "label":_("Repzo ID"),
+                "fieldname":"repzo_id",
+                "fieldtype":"Data",
+                "insert_after":"payment_type",
+                 "read_only" :1
+            },
+        ],
         'Price List':[
              {
                 "label":_("Remote ID"),
