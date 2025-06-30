@@ -233,9 +233,12 @@ def payment_refund(*args , **kwargs):
       customer_id = data.get("client_id")
       amount = float(data.get("amount") or 0) / 1000
       if frappe.db.exists("Customer",{"repzo_id":customer_id}):
-         customer_name = frappe.get_doc("Customer",{"repzo_id":customer_id},"name")
+         customer_name = frappe.db.get_value("Customer",{"repzo_id":customer_id},"name")
          payments = frappe.get_all("Payment Entry",filters={"party":customer_name,'paid_amount':amount,"docstatus":1},fields=["name"])
          if payments :
+            print(f" Customer : {customer_name} - Paid Amount : {amount}")
+            print(f"Payments Found {len(payments)}")
+            print(payments)
             if len(payments) > 1 :
                create_error_log("api payment" ,"Payment Entry" , "Multiple Payments Found")
                frappe.local.response['http_status_code'] = 500
