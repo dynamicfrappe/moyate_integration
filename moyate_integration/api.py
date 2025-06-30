@@ -178,16 +178,16 @@ def payment(*args , **kwargs) :
       creator = data.get("creator").get("name")
       reference_table = data.get("paymentsData").get("payments")
       amount = float(data.get("amount") or 0) / 1000
-      
+      payment_id = data.get("_id")
       
       if data.get("LinkedTxn") :
          doc =  data.get("LinkedTxn")
          repzo_id = get_invoice_id(doc.get("Txn_serial_number").get("formatted"))
       if repzo_id :
-         create_payment(repzo_id ,amount,client_id,creator = creator)
+         create_payment(repzo_id ,amount,client_id,payment_id=payment_id,creator = creator)
          # create_error_log("api payment" ,"Payment Entry" , f"{repzo_id} - amount {amount}")
       else:
-         create_payment_for_reconcilation(client_id=data.get("client_id"),amount = amount, creator = creator,reference_table = reference_table)
+         create_payment_for_reconcilation(client_id=data.get("client_id"),amount = amount, creator = creator,payment_id=payment_id,reference_table = reference_table)
          create_success_log("api payment","Payment Entry", f"amount {amount}")
          create_error_log("api payment" ,"Payment Entry" , "No repzo if found - amount {amount}")
       # frappe.local.response['http_status_code'] = 200
@@ -196,33 +196,74 @@ def payment(*args , **kwargs) :
    return False
 
 
+# @frappe.whitelist(allow_guest=True)
+# def payment_refund(*args , **kwargs):
+#    repzo_id  = None   
+#    try :
+#       data = json.loads(kwargs)
+#    except :
+#       data = kwargs
+      
+#    if data :
+#       if data.get("LinkedTxn") :
+#          doc =  data.get("LinkedTxn")
+#          repzo_id = get_invoice_id(doc.get("Txn_serial_number").get("formatted"))
+#       if repzo_id :
+#          if frappe.db.exists("Payment Entry",{'repzo_id':repzo_id,'docstatus':1}):
+#             payment_doc = frappe.get_doc("Payment Entry",{'repzo_id':repzo_id})
+#          try:
+#             payment_doc.cancel()
+#             frappe.local.response['http_status_code'] = 200
+#             frappe.local.response['message'] = "Payment Refund Done Correctly"
+#          except Exception as e:
+#             create_error_log("api payment" ,"Payment Entry" , e)
+#             create_error_log("api payment" ,"Payment Entry" , "No repzo if found")
+#             frappe.local.response['http_status_code'] = 402
+#             frappe.local.response['message'] = "Problem With Refund"
+            
+
 @frappe.whitelist(allow_guest=True)
 def payment_refund(*args , **kwargs):
-   repzo_id  = None   
    try :
       data = json.loads(kwargs)
    except :
       data = kwargs
       
    if data :
-      if data.get("LinkedTxn") :
-         doc =  data.get("LinkedTxn")
-         repzo_id = get_invoice_id(doc.get("Txn_serial_number").get("formatted"))
-      if repzo_id :
-         if frappe.db.exists("Payment Entry",{'repzo_id':repzo_id,'docstatus':1}):
-            payment_doc = frappe.get_doc("Payment Entry",{'repzo_id':repzo_id})
-         try:
-            payment_doc.cancel()
-            frappe.local.response['http_status_code'] = 200
-            frappe.local.response['message'] = "Payment Refund Done Correctly"
-         except Exception as e:
-            create_error_log("api payment" ,"Payment Entry" , e)
-            create_error_log("api payment" ,"Payment Entry" , "No repzo if found")
-            frappe.local.response['http_status_code'] = 402
-            frappe.local.response['message'] = "Problem With Refund"
-            
-            
+      customer_id = data.get("client_id")
+      amount = float(data.get("amount") or 0) / 1000
+      if frappe.db.exists("Customer",{"repzo_id":customer_id}):
+         customer_name = frappe.get_doc("Customer",{"repzo_id":customer_id},"name")
+         payments = frappe.get_all("Payment Entry",filters={"party":customer_name,'paid_amount':amount,"docstatus":1},fields=["name"])
+         if payments :
+            if len(payments) > 1 :
+               create_error_log("api payment" ,"Payment Entry" , "Multiple Payments Found")
+               frappe.local.response['http_status_code'] = 500
+               frappe.local.response['message'] = "Multiple Payments Found"
+               return 
+            elif len(payments) == 1 :
+               payment_doc = frappe.get_doc("Payment Entry",payments[0].name)
+               if payment_doc.docstatus == 1 :
+                  try:
+                     payment_doc.cancel()
+                     frappe.local.response['http_status_code'] = 200
+                     frappe.local.response['message'] = "Payment Refund Done Correctly"
+                     create_success_log("api payment","Payment Entry", f"Refunded Payment {payment_doc.name}")
+                     return
+                  except Exception as e:
+                     create_error_log("api payment" ,"Payment Entry" , e)
+                     frappe.local.response['http_status_code'] = 500
+                     frappe.local.response['message'] = "Problem With Refund"
+                     return
+               else :
+                  create_error_log("api payment" ,"Payment Entry" , "Payment Already Cancelled")
+                  frappe.local.response['http_status_code'] = 500
+                  frappe.local.response['message'] = "Payment Already Cancelled"
+                  return
 
+
+      
+                  
 
 @frappe.whitelist(allow_guest=True)
 def customer(*args , **kwargs) :

@@ -186,7 +186,7 @@ def get_item_variant_id(item) :
 
 
 @frappe.whitelist(allow_guest=True)
-def create_payment(repzo_id = None , amount = False,client_id = None,creator = None):
+def create_payment(repzo_id = None , amount = False,client_id = None,payment_id = None,creator = None):
       
       """
 
@@ -233,6 +233,7 @@ def create_payment(repzo_id = None , amount = False,client_id = None,creator = N
 
       log = frappe.new_doc("Payment Entry")
       log.payment_type = "Receive"
+      log.repzo_id = payment_id
       log.company = repzo_setting.company
       log.mode_of_payment = doc_mode_of_payment.mode_of_payment
       log.party_type = "Customer"
@@ -346,7 +347,7 @@ def create_payment(repzo_id = None , amount = False,client_id = None,creator = N
 
 
 @frappe.whitelist()
-def create_payment_for_reconcilation(client_id, amount = False, creator = None, reference_table=None):
+def create_payment_for_reconcilation(client_id, amount = False, creator = None, payment_id = None,reference_table=None):
    repzo_setting = frappe.get_single("Repzo Integration")
    customer = frappe.get_value("Customer", {"repzo_id": client_id}, 'name')
    linked_invoice_repzo_id = reference_table[0].get("fullinvoice_id")
@@ -404,6 +405,7 @@ def create_payment_for_reconcilation(client_id, amount = False, creator = None, 
       payment_entry.party = customer
       payment_entry.paid_to = account
       payment_entry.paid_to_account_currency = currency
+      payment_entry.repzo_id = payment_id
 
       print(f"Reference table: {reference_table}")
       
