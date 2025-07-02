@@ -6,13 +6,18 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "column_break_1",
+  "from_date",
+  "column_break_mcyo",
+  "to_date",
+  "section_break_5",
   "party_type",
   "party",
-  "column_break_mcyo",
   "posting_date",
   "balance",
   "section_break_mvxd",
-  "gl_btn"
+  "gl_btn",
+  "amended_from"
  ],
  "fields": [
   {
@@ -51,12 +56,39 @@
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "label": "Posting Date"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "from Date"
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "to Date"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Monthly Account Statement",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_5",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-29 13:49:34.181527",
+ "modified": "2025-07-02 10:56:21.345443",
  "modified_by": "Administrator",
  "module": "moyate_integration",
  "name": "Monthly Account Statement",

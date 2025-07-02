@@ -10,21 +10,21 @@ class MonthlyAccountStatement(Document):
 	pass
 
 @frappe.whitelist()
-def get_balance(party_type , party ):
+def get_balance(party_type, party, from_date, to_date):
 	res = 0
 	if party_type == "Customer":
-		res = get_closing_balance_for_customer(party_type , party )
+		res = get_closing_balance_for_customer(party_type, party, from_date, to_date)
 	elif party_type == "Supplier":
-		res = get_closing_balance_for_supplier(party_type , party)
+		res = get_closing_balance_for_supplier(party_type, party, from_date, to_date)
 
 	return res
 
 
 @frappe.whitelist()
-def get_closing_balance_for_supplier(party_type , party):
+def get_closing_balance_for_supplier(party_type , party, from_date, to_date):
 	company = frappe.defaults.get_user_default("Company")
-	from_date = frappe.defaults.get_user_default("fiscal_year_start_date")
-	to_date = frappe.utils.today()
+	# from_date = frappe.defaults.get_user_default("fiscal_year_start_date")
+	# to_date = frappe.utils.today()
 	supplier_name = frappe.get_value( party_type, party , "supplier_name")
 	filters = {
 		"from_date": from_date,
@@ -41,11 +41,11 @@ def get_closing_balance_for_supplier(party_type , party):
 		return 0
 
 @frappe.whitelist()
-def get_closing_balance_for_customer(party_type , party):
+def get_closing_balance_for_customer(party_type, party, from_date, to_date):
 	company = frappe.defaults.get_user_default("Company")
-	from_date = frappe.defaults.get_user_default("fiscal_year_start_date")
-	to_date = frappe.utils.today()
-	customer_name = frappe.get_value( party_type , party , "customer_name")
+	# from_date = frappe.defaults.get_user_default("fiscal_year_start_date")
+	# to_date = frappe.utils.today()
+	customer_name = frappe.get_value(party_type, party, "customer_name")
 	filters = {
 		"from_date": from_date,
 		"to_date": to_date,
