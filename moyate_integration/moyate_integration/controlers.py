@@ -268,16 +268,14 @@ def create_payment(repzo_id = None , amount = False,client_id = None,payment_id 
       #log.status = "Submitted"
       
       try:
-         log.save(ignore_permissions = True)
          #log.submit()
          #frappe.db.commit()
-         log.docstatus = 1 
-         log.save(ignore_permissions = True)
-         frappe.db.commit()
-         create_success_log("create_payment" , "Payment Entry" , f"{log.name} succefuly created")
+         log.insert(ignore_permissions = True)
+         log.submit()
+         create_success_log("create_payment ( standalone )" , "Payment Entry" , f"{log.name} succefuly created")
          #return log.name
       except Exception as e :
-         create_error_log("create_payment" , "Sales Invoice" , e )
+         create_error_log("create_payment ( standalone )" , "Sales Invoice" , e )
          return False
       
       
@@ -478,7 +476,7 @@ def create_payment_for_reconcilation(client_id, amount = False, creator = None, 
       payment_entry.setup_party_account_field()
       payment_entry.set_missing_values()
       # Save and submit using standard validation
-      payment_entry.save(ignore_permissions=True)
+      payment_entry.insert(ignore_permissions=True)
       payment_entry.submit()
       print(f"Payment entry created and submitted: {payment_entry.name}")
       

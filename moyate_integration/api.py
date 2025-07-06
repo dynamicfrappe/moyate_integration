@@ -188,8 +188,8 @@ def payment(*args , **kwargs) :
          # create_error_log("api payment" ,"Payment Entry" , f"{repzo_id} - amount {amount}")
       else:
          create_payment_for_reconcilation(client_id=data.get("client_id"),amount = amount, creator = creator,payment_id=payment_id,reference_table = reference_table)
-         create_success_log("api payment","Payment Entry", f"amount {amount}")
-         create_error_log("api payment" ,"Payment Entry" , "No repzo if found - amount {amount}")
+         create_success_log("api payment reconcilation","Payment Entry", f"amount {amount}")
+         create_error_log(f"api payment reconcilation" ,"Payment Entry" , "No repzo id found - amount {amount}")
       # frappe.local.response['http_status_code'] = 200
       # frappe.local.response['message'] = "Payment Done Correctly"
       return  
